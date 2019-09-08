@@ -4,6 +4,8 @@ package lesson2.task2
 
 import lesson1.task1.sqr
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -69,10 +71,10 @@ fun daysInMonth(month: Int, year: Int): Int =
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean {
-    val a = r2 - sqrt(sqr(x1 - x2) + sqr(y1 - y2))
-    return ((r1 <= r2) && pointInsideCircle(x1, y1, x2, y2, r2) && (r1 <= a))
-}
+): Boolean =
+    r2 >= r1 + sqrt(sqr(x1 - x2) + sqr(y1 - y2))
+
+
 
 /**
  * Средняя
@@ -84,8 +86,6 @@ fun circleInside(
  * Вернуть true, если кирпич пройдёт
  */
 fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean =
-    ((((a <= r) && (b <= s)) || ((a <= s) && (b <= r))) ||
-            (((b <= r) && (c <= s)) || ((b <= s) && (c <= r))) ||
-            (((a <= r) && (c <= s)) || ((a <= s) && (c <= r))))
+    minOf(a, b, c) <= min(r, s) && a + b + c - minOf(a, b, c) - maxOf(a, b, c) <= max(r, s)
 
 

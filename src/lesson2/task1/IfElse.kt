@@ -115,10 +115,12 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int =
-    if ((kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2)) 3
-    else if (kingX == rookX1 || kingY == rookY1) 1
-    else if (kingX == rookX2 || kingY == rookY2) 2
-    else 0
+    when {
+        (kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2) -> 3
+        kingX == rookX1 || kingY == rookY1 -> 1
+        kingX == rookX2 || kingY == rookY2 -> 2
+        else -> 0
+    }
 
 
 /**
@@ -142,7 +144,6 @@ fun rookOrBishopThreatens(
     else 0
 
 
-
 /**
  * Простая
  *
@@ -152,18 +153,17 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val cosa = (sqr(c) + sqr(b) - sqr(a)) / (2 * b * c)
-    val cosb = (sqr(c) + sqr(a) - sqr(b)) / (2 * a * c)
-    val cosc = (sqr(a) + sqr(b) - sqr(c)) / (2 * b * a)
-    return if (cosa !in -1.0..1.0 || cosb !in -1.0..1.0 || cosc !in -1.0..1.0) -1
-    else if (cosa > 0.0 && cosb > 0.0 && cosc > 0.0) 0
-    else if ((cosa == 0.0 && cosb > 0.0 && cosc > 0.0) ||
-        (cosa > 0.0 && cosb == 0.0 && cosc > 0.0) || (cosa > 0.0 && cosb > 0.0 && cosc == 0.0)
-    ) 1
-    else if ((cosa < 0.0 && cosb > 0.0 && cosc > 0.0) ||
-        (cosa > 0.0 && cosb < 0.0 && cosc > 0.0) || (cosa > 0.0 && cosb > 0.0 && cosc < 0.0)
-    ) 2
-    else -1
+    val cosA = (sqr(c) + sqr(b) - sqr(a)) / (2 * b * c)
+    val cosB = (sqr(c) + sqr(a) - sqr(b)) / (2 * a * c)
+    val cosC = (sqr(a) + sqr(b) - sqr(c)) / (2 * b * a)
+    return when {
+        cosA !in -1.0..1.0 || cosB !in -1.0..1.0 || cosC !in -1.0..1.0 -> -1
+        cosA > 0.0 && cosB > 0.0 && cosC > 0.0 -> 0
+        cosA == 0.0 && cosB > 0.0 && cosC > 0.0 ||
+                cosA > 0.0 && cosB == 0.0 && cosC > 0.0 ||
+                cosA > 0.0 && cosB > 0.0 && cosC == 0.0 -> 1
+        else -> 2
+    }
 }
 
 /**
