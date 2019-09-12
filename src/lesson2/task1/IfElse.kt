@@ -159,7 +159,9 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     val cosB = (sqr(c) + sqr(a) - sqr(b)) / (2 * a * c)
     val cosC = (sqr(a) + sqr(b) - sqr(c)) / (2 * b * a)
     return when {
-        (cosA <= -1.0 || cosA > 1.0) || (cosB <= -1.0 || cosB > 1.0) || (cosC <= -1.0 || cosC > 1.0) -> -1
+        (cosA <= -1.0 || cosA > 1.0) ||
+                (cosB <= -1.0 || cosB > 1.0) ||
+                (cosC <= -1.0 || cosC > 1.0) -> -1
         cosA > 0.0 && cosB > 0.0 && cosC > 0.0 -> 0
         cosA == 0.0 && cosB > 0.0 && cosC > 0.0 ||
                 cosA > 0.0 && cosB == 0.0 && cosC > 0.0 ||
