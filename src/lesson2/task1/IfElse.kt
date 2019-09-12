@@ -138,10 +138,12 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int =
-    if ((abs(kingX - bishopX) == abs(kingY - bishopY)) && (kingX == rookX || kingY == rookY)) 3
-    else if (abs(kingX - bishopX) == abs(kingY - bishopY)) 2
-    else if (kingX == rookX || kingY == rookY) 1
-    else 0
+    when {
+        (abs(kingX - bishopX) == abs(kingY - bishopY)) && (kingX == rookX || kingY == rookY) -> 3
+        abs(kingX - bishopX) == abs(kingY - bishopY) -> 2
+        kingX == rookX || kingY == rookY -> 1
+        else -> 0
+    }
 
 
 /**
@@ -157,7 +159,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     val cosB = (sqr(c) + sqr(a) - sqr(b)) / (2 * a * c)
     val cosC = (sqr(a) + sqr(b) - sqr(c)) / (2 * b * a)
     return when {
-        cosA !in -1.0..1.0 || cosB !in -1.0..1.0 || cosC !in -1.0..1.0 -> -1
+        (cosA <= -1.0 || cosA > 1.0) || (cosB <= -1.0 || cosB > 1.0) || (cosC <= -1.0 || cosC > 1.0) -> -1
         cosA > 0.0 && cosB > 0.0 && cosC > 0.0 -> 0
         cosA == 0.0 && cosB > 0.0 && cosC > 0.0 ||
                 cosA > 0.0 && cosB == 0.0 && cosC > 0.0 ||
