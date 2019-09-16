@@ -74,7 +74,7 @@ fun digitNumber(n: Int): Int {
     do {
         num /= 10
         count++
-    } while (num > 0)
+    } while (num != 0)
     return count
 }
 
@@ -308,29 +308,17 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun countSquareNumber(n: Int): Int {
-    var count = 0
-    for (i in 1..n) {
-        var y = sqr(i)
-        var x = 0
-        while (y > 0) {
-            x++
-            y /= 10
-        }
-        count += x
-    }
-    return count
-}
+
 
 fun squareSequenceDigit(n: Int): Int {
     val x: Int
     var result = 0
     var y: Int
-    var z: Int
+    var z = 0
     for (i in 1..n) {
-        z = countSquareNumber(i)
-        y = countSquareNumber(i + 1)
-        if (n in (z + 1) until y) {
+        z += digitNumber(i * i)
+        y = z + digitNumber((i + 1) * (i + 1))
+        if ((z < n) && (n < y)) {
             x = y - n
             result = (i + 1) * (i + 1)
             for (j in 1..x) {
@@ -338,7 +326,7 @@ fun squareSequenceDigit(n: Int): Int {
             }
             return result % 10
         }
-        if (countSquareNumber(i) == n) return sqr(i) % 10
+        if (z == n) return sqr(i) % 10
     }
     return result
 }
@@ -352,28 +340,15 @@ fun squareSequenceDigit(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun countFibNumber(n: Int): Int {
-    var count = 0
-    for (i in 1..n) {
-        var y = fib(i)
-        var x = 0
-        while (y > 0) {
-            x++
-            y /= 10
-        }
-        count += x
-    }
-    return count
-}
 
 fun fibSequenceDigit(n: Int): Int {
     val x: Int
     var result = 0
     var y: Int
-    var z: Int
+    var z = 0
     for (i in 1..n) {
-        z = countFibNumber(i)
-        y = countFibNumber(i + 1)
+        z += digitNumber(fib(i))
+        y = z + digitNumber(fib(i + 1))
         if (n in (z + 1) until y) {
             x = y - n
             result = fib(i + 1)
@@ -382,7 +357,7 @@ fun fibSequenceDigit(n: Int): Int {
             }
             return result % 10
         }
-        if (countFibNumber(i) == n) return fib(i) % 10
+        if (z == n) return fib(i) % 10
     }
     return result
 }
