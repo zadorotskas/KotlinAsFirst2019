@@ -402,7 +402,7 @@ fun russian(n: Int): String {
         when {
             (m % 10 in 11..19) -> result.add(exceptions[4])
             (m % 10 == 1) -> result.add(exceptions[2])
-            (m % 10 == 2) || (m % 10 == 3) -> result.add(exceptions[4])
+            (m % 10 == 2) || (m % 10 == 3) || (m % 10 == 4) -> result.add(exceptions[4])
             else -> result.add(exceptions[3])
         }
     }
