@@ -3,6 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -363,7 +364,7 @@ fun russian(n: Int): String {
         "девяносто"
     )
     val hundreds =
-        listOf("сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семсот", "восемсот", "девятьсот")
+        listOf("сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
     val exceptions = listOf(
         "одна",
         "две",
