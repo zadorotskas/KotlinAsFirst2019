@@ -179,12 +179,12 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun polynom(p: List<Int>, x: Int): Int {
-    var sum = 0.0
+    var sum = 0
     val y = x.toDouble()
     for (i in p.indices) {
-        sum += p[i] * y.pow(i)
+        sum += (p[i]) * (y.pow(i)).toInt()
     }
-    return sum.toInt()
+    return sum
 }
 
 /**
