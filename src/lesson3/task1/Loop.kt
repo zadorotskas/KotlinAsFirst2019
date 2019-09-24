@@ -103,13 +103,18 @@ fun fib(n: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
+fun algEuc(m: Int, n: Int): Int {
     var a = m
     var b = n
     while (a != b) {
         if (a > b) a -= b
         else b -= a
     }
+    return a
+}
+
+fun lcm(m: Int, n: Int): Int {
+    val a = algEuc(m, n)
     return (m / a) * n
 }
 
@@ -145,12 +150,7 @@ fun maxDivisor(n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
-    var a = n
-    var b = m
-    while (a != b) {
-        if (a > b) a -= b
-        else b -= a
-    }
+    val a = algEuc(m, n)
     return (a == 1)
 }
 
@@ -161,11 +161,7 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
-fun squareBetweenExists(m: Int, n: Int): Boolean {
-    for (i in m..n)
-        if (sqrt(i.toDouble()) % 1 == 0.0) return true
-    return false
-}
+fun squareBetweenExists(m: Int, n: Int): Boolean = floor(sqrt(n.toDouble())) - ceil(sqrt(m.toDouble())) >= 0
 
 
 /**
@@ -210,20 +206,25 @@ fun collatzSteps(x: Int): Int {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sin(x: Double, eps: Double): Double {
-    var y = x % (2 * PI)
-    val x2 = x % (2 * PI)
-    var sin = 0.0
+fun sinCos(x2: Double, eps: Double, a: Int): Double {
+    var y = if (a == 1) x2
+    else 1.0
     var n = 0
+    var res = 0.0
     var k: Int
     while (abs(y) >= abs(eps)) {
         n++
-        sin += y
-        k = n * 2 + 1
+        res += y
+        k = n * 2 + 1 * a
         y = if (n % 2 == 0) x2.pow(k) / factorial(k)
         else -(x2.pow(k) / factorial(k))
     }
-    return sin
+    return res
+}
+
+fun sin(x: Double, eps: Double): Double {
+    val y = x % (2 * PI)
+    return sinCos(y, eps, 1)
 }
 
 /**
@@ -236,19 +237,8 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
-    var y = 1.0
-    val x2 = x % (2 * PI)
-    var cos = 0.0
-    var n = 0
-    var k: Int
-    while (abs(y) >= abs(eps)) {
-        n++
-        cos += y
-        k = n * 2
-        y = if (n % 2 == 0) x2.pow(k) / factorial(k)
-        else -(x2.pow(k) / factorial(k))
-    }
-    return cos
+    val y = x % (2 * PI)
+    return sinCos(y, eps, 0)
 }
 
 
@@ -308,29 +298,29 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-
-
-fun squareSequenceDigit(n: Int): Int {
+fun sequenceDigit(n: Int, a: Int): Int {
+    val b = abs(a - 1)
     val x: Int
     var result = 0
     var y: Int
     var z = 0
     for (i in 1..n) {
-        z += digitNumber(i * i)
-        y = z + digitNumber((i + 1) * (i + 1))
+        z += digitNumber(i * i) * a + digitNumber(fib(i)) * b
+        y = z + digitNumber((i + 1) * (i + 1)) * a + digitNumber(fib(i + 1)) * b
         if ((z < n) && (n < y)) {
             x = y - n
-            result = (i + 1) * (i + 1)
+            result = (i + 1) * (i + 1) * a + fib(i + 1) * b
             for (j in 1..x) {
                 result /= 10
             }
             return result % 10
         }
-        if (z == n) return sqr(i) % 10
+        if (z == n) return (sqr(i) * a + fib(i) * b) % 10
     }
     return result
 }
 
+fun squareSequenceDigit(n: Int): Int = sequenceDigit(n, 1)
 /**
  * Сложная
  *
@@ -341,23 +331,4 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 
-fun fibSequenceDigit(n: Int): Int {
-    val x: Int
-    var result = 0
-    var y: Int
-    var z = 0
-    for (i in 1..n) {
-        z += digitNumber(fib(i))
-        y = z + digitNumber(fib(i + 1))
-        if (n in (z + 1) until y) {
-            x = y - n
-            result = fib(i + 1)
-            for (j in 1..x) {
-                result /= 10
-            }
-            return result % 10
-        }
-        if (z == n) return fib(i) % 10
-    }
-    return result
-}
+fun fibSequenceDigit(n: Int): Int = sequenceDigit(n, 0)

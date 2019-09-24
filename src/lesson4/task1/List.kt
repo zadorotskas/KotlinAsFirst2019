@@ -3,7 +3,9 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import kotlin.math.abs
+import java.lang.StringBuilder
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -117,13 +119,8 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double {
-    var sum = 0.0
-    for (element in v) {
-        sum += element * element
-    }
-    return sqrt(sum)
-}
+fun abs(v: List<Double>): Double =
+    sqrt(v.fold(0.0) { previousResult, element -> previousResult + element.pow(2) })
 
 /**
  * Простая
@@ -131,12 +128,9 @@ fun abs(v: List<Double>): Double {
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
 fun mean(list: List<Double>): Double {
-    var sum = 0.0
-    for (element in list) {
-        sum += element
-    }
     return if (list.isEmpty()) 0.0
-    else sum / list.size.toDouble()
+    else
+        (list.fold(0.0) { previousResult, element -> previousResult + element }) / list.size
 }
 
 /**
@@ -215,16 +209,11 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  */
 fun factorize(n: Int): List<Int> {
     var m = n
-    var x = 2
     val result = mutableListOf<Int>()
-    while (m > 1) {
-        for (i in x..n) {
-            if (m % i == 0) {
-                m /= i
-                result.add(i)
-                x = i
-                break
-            }
+    for (i in 2..ceil(sqrt(n.toDouble())).toInt()) {
+        while (m % i == 0) {
+            m /= i
+            result.add(i)
         }
     }
     return result.sorted()
@@ -272,13 +261,14 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun convertToString(n: Int, base: Int): String {
     val list = convert(n, base)
-    var result = ""
+    val result = StringBuilder()
+    val a = 'a'.toInt() - 10
     for (i in list.indices) {
-        result += if (list[i] > 9) {
-            ((list[i] + 55).toChar()).toString()
-        } else list[i].toString()
+        if (list[i] > 9) {
+            result.append((list[i] + a).toChar())
+        } else result.append(list[i])
     }
-    return result.toLowerCase()
+    return result.toString().toLowerCase()
 }
 
 /**
@@ -310,9 +300,12 @@ fun decimal(digits: List<Int>, base: Int): Int {
  */
 fun decimalFromString(str: String, base: Int): Int {
     val number = mutableListOf<Int>()
+    val a = 'a'.toInt() - 10
     for (i in str.indices) {
-        if (str[i].isLetter()) number.add(str[i].toInt() - 87)
-        else number.add(str[i].toInt() - 48)
+        if (str[i].isLetter()) number.add(str[i].toInt() - a)
+        else {
+            number.add(str[i].toInt() - '0'.toInt())
+        }
     }
     return decimal(number, base)
 }
@@ -328,17 +321,27 @@ fun decimalFromString(str: String, base: Int): Int {
 fun roman(n: Int): String {
     var result = String()
     var m = n
-    val letter = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-    val number = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    do {
-        for (i in letter.indices) {
-            if (m - number[i] >= 0) {
-                m -= number[i]
-                result += letter[i]
-                break
-            }
+    val roman = mapOf<String, Int>(
+        "M" to 1000,
+        "CM" to 900,
+        "D" to 500,
+        "CD" to 400,
+        "C" to 100,
+        "XC" to 90,
+        "L" to 50,
+        "XL" to 40,
+        "X" to 10,
+        "IX" to 9,
+        "V" to 5,
+        "IV" to 4,
+        "I" to 1
+    )
+    for ((letter, number) in roman) {
+        while (m - number >= 0) {
+            m -= number
+            result += letter
         }
-    } while (m > 0)
+    }
     return result
 }
 
