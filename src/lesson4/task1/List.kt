@@ -210,12 +210,19 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 fun factorize(n: Int): List<Int> {
     var m = n
     val result = mutableListOf<Int>()
-    for (i in 2..ceil(sqrt(n.toDouble())).toInt()) {
-        while (m % i == 0) {
+    for (i in 2..ceil(n.toDouble()).toInt()) {
+        if (m == 1) break
+        if ((i < sqrt(n.toDouble())) && (m % (i * i) == 0)) {
+            while (m % i == 0) {
+                m /= i
+                result.add(i)
+            }
+        } else if (m % i == 0) {
             m /= i
             result.add(i)
         }
     }
+    if (m % n == 0) result.add(n)
     return result.sorted()
 }
 
@@ -321,7 +328,7 @@ fun decimalFromString(str: String, base: Int): Int {
 fun roman(n: Int): String {
     var result = String()
     var m = n
-    val roman = mapOf<String, Int>(
+    val roman = mapOf(
         "M" to 1000,
         "CM" to 900,
         "D" to 500,
