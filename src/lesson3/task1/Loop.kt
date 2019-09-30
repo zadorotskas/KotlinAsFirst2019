@@ -206,8 +206,8 @@ fun collatzSteps(x: Int): Int {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sinCos(x2: Double, eps: Double, a: Int): Double {
-    var y = if (a == 1) x2
+fun sinCos(x2: Double, eps: Double, a: Boolean, kf: (Int) -> Int): Double {
+    var y = if (a) x2
     else 1.0
     var n = 0
     var res = 0.0
@@ -215,7 +215,7 @@ fun sinCos(x2: Double, eps: Double, a: Int): Double {
     while (abs(y) >= abs(eps)) {
         n++
         res += y
-        k = n * 2 + 1 * a
+        k = kf(n)
         y = if (n % 2 == 0) x2.pow(k) / factorial(k)
         else -(x2.pow(k) / factorial(k))
     }
@@ -223,8 +223,9 @@ fun sinCos(x2: Double, eps: Double, a: Int): Double {
 }
 
 fun sin(x: Double, eps: Double): Double {
+    val kf = { n: Int -> n * 2 + 1 }
     val y = x % (2 * PI)
-    return sinCos(y, eps, 1)
+    return sinCos(y, eps, true, kf)
 }
 
 /**
@@ -237,8 +238,9 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
+    val kf = { n: Int -> n * 2 }
     val y = x % (2 * PI)
-    return sinCos(y, eps, 0)
+    return sinCos(y, eps, false, kf)
 }
 
 
@@ -298,29 +300,31 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun sequenceDigit(n: Int, a: Int): Int {
-    val b = abs(a - 1)
+fun sequenceDigit(n: Int, a: (Int) -> Int): Int {
     val x: Int
     var result = 0
     var y: Int
     var z = 0
     for (i in 1..n) {
-        z += digitNumber(i * i) * a + digitNumber(fib(i)) * b
-        y = z + digitNumber((i + 1) * (i + 1)) * a + digitNumber(fib(i + 1)) * b
+        z += digitNumber(a(i))
+        y = z + digitNumber(a(i + 1))
         if ((z < n) && (n < y)) {
             x = y - n
-            result = (i + 1) * (i + 1) * a + fib(i + 1) * b
+            result = a(i + 1)
             for (j in 1..x) {
                 result /= 10
             }
             return result % 10
         }
-        if (z == n) return (sqr(i) * a + fib(i) * b) % 10
+        if (z == n) return a(i) % 10
     }
     return result
 }
 
-fun squareSequenceDigit(n: Int): Int = sequenceDigit(n, 1)
+fun squareSequenceDigit(n: Int): Int {
+    val hofSqr = { a: Int -> a * a }
+    return sequenceDigit(n, hofSqr)
+}
 /**
  * Сложная
  *
@@ -331,4 +335,7 @@ fun squareSequenceDigit(n: Int): Int = sequenceDigit(n, 1)
  * Использовать операции со строками в этой задаче запрещаетсяы.
  */
 
-fun fibSequenceDigit(n: Int): Int = sequenceDigit(n, 0)
+fun fibSequenceDigit(n: Int): Int {
+    val hofFib = { a: Int -> fib(a) }
+    return sequenceDigit(n, hofFib)
+}

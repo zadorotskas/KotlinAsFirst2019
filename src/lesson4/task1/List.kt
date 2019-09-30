@@ -3,11 +3,10 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import java.lang.StringBuilder
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.text.StringBuilder
 
 /**
  * Пример
@@ -210,14 +209,9 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 fun factorize(n: Int): List<Int> {
     var m = n
     val result = mutableListOf<Int>()
-    for (i in 2..ceil(n.toDouble()).toInt()) {
+    for (i in 2..ceil(sqrt(n.toDouble())).toInt()) {
         if (m == 1) break
-        if ((i < sqrt(n.toDouble())) && (m % (i * i) == 0)) {
-            while (m % i == 0) {
-                m /= i
-                result.add(i)
-            }
-        } else if (m % i == 0) {
+        while (m % i == 0) {
             m /= i
             result.add(i)
         }
@@ -326,7 +320,7 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    var result = String()
+    val result = StringBuilder()
     var m = n
     val roman = mapOf(
         "M" to 1000,
@@ -346,10 +340,10 @@ fun roman(n: Int): String {
     for ((letter, number) in roman) {
         while (m - number >= 0) {
             m -= number
-            result += letter
+            result.append(letter)
         }
     }
-    return result
+    return result.toString()
 }
 
 /**
