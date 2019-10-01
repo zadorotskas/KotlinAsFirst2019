@@ -2,7 +2,6 @@
 
 package lesson3.task1
 
-import lesson1.task1.sqr
 import kotlin.math.*
 
 /**
@@ -325,6 +324,7 @@ fun squareSequenceDigit(n: Int): Int {
     val hofSqr = { a: Int -> a * a }
     return sequenceDigit(n, hofSqr)
 }
+
 /**
  * Сложная
  *

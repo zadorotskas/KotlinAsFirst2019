@@ -3,10 +3,9 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import kotlin.math.ceil
+import lesson3.task1.isPrime
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.text.StringBuilder
 
 /**
  * Пример
@@ -209,14 +208,17 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 fun factorize(n: Int): List<Int> {
     var m = n
     val result = mutableListOf<Int>()
-    for (i in 2..ceil(sqrt(n.toDouble())).toInt()) {
+    for (i in 2..n) {
         if (m == 1) break
         while (m % i == 0) {
             m /= i
             result.add(i)
         }
+        if (isPrime(m)) {
+            result.add(m)
+            break
+        }
     }
-    if (m % n == 0) result.add(n)
     return result.sorted()
 }
 

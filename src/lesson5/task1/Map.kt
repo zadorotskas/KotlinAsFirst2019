@@ -2,8 +2,7 @@
 
 package lesson5.task1
 
-import kotlinx.html.attributes.stringSetDecode
-import kotlin.math.min
+
 
 /**
  * Пример
@@ -147,11 +146,9 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit {
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
 fun whoAreInBoth(a: List<String>, b: List<String>): List<String> {
-    val res = mutableListOf<String>()
-    for (element in a) {
-        if (element in b && element !in res) res.add(element)
-    }
-    return res
+    val setA = a.toSet()
+    val setB = b.toSet()
+    return (setA.intersect(setB)).toList()
 }
 
 /**
@@ -225,15 +222,14 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
     var minCost = Double.MAX_VALUE
-    var res = ""
+    var res: String? = null
     for ((name, info) in stuff) {
         if (info.first == kind && info.second < minCost) {
             minCost = info.second
             res = name
         }
     }
-    return if (res == "") null
-    else res
+    return res
 }
 
 /**
@@ -246,10 +242,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    for (element in word) {
-        if (element !in chars) return false
-    }
-    return true
+    val letters = word.toSet()
+    val setChars = chars.toSet()
+    return (setChars.union(letters) == setChars)
 }
 
 /**
@@ -269,14 +264,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
     for (element in list) {
         res[element] = res.getOrDefault(element, 0) + 1
     }
-    val x = mutableListOf<String>()
-    for ((elem, number) in res) {
-        if (number == 1) {
-            x.add(elem)
-        }
-    }
-    for (elem in x) res.remove(elem)
-    return res
+    return res.filter { it.value > 1 }
 }
 /**
  * Средняя
