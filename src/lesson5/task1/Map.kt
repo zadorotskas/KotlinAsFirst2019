@@ -2,6 +2,7 @@
 
 package lesson5.task1
 
+import ru.spbstu.wheels.sorted
 
 
 /**
@@ -197,10 +198,15 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val res = mutableMapOf<String, Double>()
+    val c = mutableMapOf<String, Int>()
     for ((key, value) in stockPrices) {
         if (key !in res) {
             res[key] = value
-        } else res[key] = (res[key]!! + value) / 2
+            c[key] = 1
+        } else {
+            res[key] = (res[key]!! * c[key]!! + value) / (c[key]!! + 1)
+            c[key] = c[key]!! + 1
+        }
     }
     return res
 }
@@ -242,7 +248,11 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val letters = word.toSet()
+    val x = mutableListOf<Char>()
+    for (element in word) {
+        x.add(element)
+    }
+    val letters = x.toSet()
     val setChars = chars.toSet()
     return (setChars.union(letters) == setChars)
 }
@@ -266,6 +276,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
     }
     return res.filter { it.value > 1 }
 }
+
 /**
  * Средняя
  *
@@ -277,13 +288,16 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  */
 fun hasAnagrams(words: List<String>): Boolean {
     for (j in words.indices) {
-        val element = words[j]
-        val letters = mutableListOf<Char>()
-        for (i in element.indices) {
-            letters.add(element[i])
+        val x = mutableListOf<Char>()
+        for (element in words[j]) {
+            x.add(element)
         }
         for (i in j + 1 until words.size) {
-            if (canBuildFrom(letters, words[i])) return true
+            val y = mutableListOf<Char>()
+            for (element in words[i]) {
+                y.add(element)
+            }
+            if (x.sorted() == y.sorted()) return true
         }
     }
     return false
@@ -323,7 +337,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
             x = (x + friends.getOrDefault(element, setOf())).toMutableSet()
             if (element !in res) res[element] = setOf()
         }
-        for (element in x) if (name == element) x.remove(element)
+        var del = ""
+        for (element in x) if (name == element) del = name
+        x.remove(del)
         res[name] = (x.sorted()).toSet()
     }
     return res
@@ -346,7 +362,16 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    var res = Pair(-1, -1)
+    for (i in 0 until number / 2) {
+        if (list.indexOf(i) != -1 && list.indexOf(number - i) != -1) {
+            res = list.indexOf(i) to list.indexOf(number - i)
+            break
+        }
+    }
+    return res.sorted()
+}
 
 /**
  * Очень сложная
