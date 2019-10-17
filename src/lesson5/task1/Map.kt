@@ -3,6 +3,7 @@
 package lesson5.task1
 
 import ru.spbstu.wheels.sorted
+import kotlin.math.abs
 
 
 /**
@@ -230,7 +231,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
     var minCost = Double.MAX_VALUE
     var res: String? = null
     for ((name, info) in stuff) {
-        if (info.first == kind && info.second < minCost) {
+        if (info.first == kind && info.second <= minCost) {
             minCost = info.second
             res = name
         }
@@ -333,8 +334,12 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     for ((name, friend) in friends) {
         var x = mutableSetOf<String>()
         x.addAll(friend)
+        var y: MutableSet<String>
         for (element in friend) {
-            x = (x + friends.getOrDefault(element, setOf())).toMutableSet()
+            do {
+                y = x
+                x = (x + friends.getOrDefault(element, setOf())).toMutableSet()
+            } while (x != y)
             if (element !in res) res[element] = setOf()
         }
         var del = ""
@@ -364,7 +369,8 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     var res = Pair(-1, -1)
-    for (i in 0 until number / 2) {
+    val x = number / 2 - 1 * abs(number % 2 - 1)
+    for (i in 0..x) {
         if (list.indexOf(i) != -1 && list.indexOf(number - i) != -1) {
             res = list.indexOf(i) to list.indexOf(number - i)
             break

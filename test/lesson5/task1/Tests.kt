@@ -260,6 +260,7 @@ class Tests {
         assertFalse(hasAnagrams(emptyList()))
         assertTrue(hasAnagrams(listOf("рот", "свет", "тор")))
         assertFalse(hasAnagrams(listOf("рот", "свет", "код", "дверь")))
+        assertFalse(hasAnagrams(listOf("рот", "свет", "торррррррррррр")))
     }
 
     @Test
@@ -292,11 +293,33 @@ class Tests {
                 )
             )
         )
+        assertEquals(
+            mapOf(
+                "1" to setOf(),
+                "0" to setOf("1", "2", "4"),
+                "2" to setOf("0", "1", "3", "4"),
+                "3" to setOf("0", "1", "2"),
+                "4" to setOf("0", "1", "2", "3")
+            ),
+            propagateHandshakes(
+                mapOf(
+                    "1" to setOf(),
+                    "0" to setOf("2"),
+                    "2" to setOf("4", "0", "1"),
+                    "3" to setOf("0", "1"),
+                    "4" to setOf("3", "0", "1", "2")
+                )
+            )
+        )
     }
 
     @Test
     @Tag("Hard")
     fun findSumOfTwo() {
+        assertEquals(
+            Pair(0, 1),
+            findSumOfTwo(listOf(0, 1), 1)
+        )
         assertEquals(
             Pair(-1, -1),
             findSumOfTwo(emptyList(), 1)

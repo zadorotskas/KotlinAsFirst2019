@@ -95,7 +95,7 @@ fun dateStrToDigit(str: String): String {
     else {
         val day = matchResult[0].toInt()
         val year = matchResult[2].toInt()
-        String.format("%02d.%02d.%04d", day, m, year)
+        String.format("%02d.%02d.%d", day, m, year)
     }
 }
 
@@ -110,7 +110,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val matchResult = ((Regex("""(\d\d).(\d\d).(\d\d\d\d)""").find(digital)) ?: return "").groupValues.drop(1)
+    val matchResult = ((Regex("""(\d{1,2}).(\d{1,2}).(\d{1,4})""").find(digital)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
         "Февраля",
@@ -225,10 +225,10 @@ fun plusMinus(expression: String): Int {
             (parts[i] == "+") && (i % 2 != 0) -> k = 1
             (parts[i] == "-") && (i % 2 != 0) -> k = -1
         }
+
     }
-    if (expression.contains(Regex("""^((\d+)\s*([-+])?\s*)*$"""))) return res
-    else
-        throw IllegalArgumentException()
+    if (expression.contains(Regex("""^((\d+)\s+([-+])\s+)*(\d+)$"""))) return res
+    else throw IllegalArgumentException()
 }
 
 
