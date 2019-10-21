@@ -316,4 +316,124 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeCommandsInLoop(commands: String): String {
+    var countBrace = 0
+    val res = StringBuilder()
+    for (char in commands) {
+        when {
+            char.toString() == "]" -> countBrace -= 1
+            char.toString() == "[" -> countBrace += 1
+        }
+        res.append(char)
+        if (countBrace == 0) break
+    }
+    res.deleteCharAt(0)
+    return res.toString()
+}
+
+fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
+    var res = list.toMutableList()
+    res.removeAt(res.size - 1)
+    res.removeAt(res.size - 1)
+    var ttl = list[list.size - 2]
+    var sensor = list.last()
+    var commandsInLoop = StringBuilder()
+    var countBrace = 0
+    val commands = StringBuilder(commandsIn)
+
+    do {
+        if (sensor !in 0 until res.size) throw IllegalStateException()
+        if (commands.isEmpty()) break
+
+        when (commands.first().toString()) {
+            ">" -> sensor += 1
+            "<" -> sensor -= 1
+            "+" -> res[sensor] += 1
+            "-" -> res[sensor] -= 1
+        }
+
+        if (commands.first().toString() == "[") {
+            countBrace += 1
+            val inLoop = computeCommandsInLoop(commands.toString())
+
+            commandsInLoop = StringBuilder(inLoop)
+            commandsInLoop.deleteCharAt(commandsInLoop.length - 1)
+            if (res[sensor] == 0) {
+
+                countBrace -= 1
+                val numberToDelete = inLoop.length
+                commands.delete(0, numberToDelete)
+            } else {
+                res.add(ttl)
+                res.add(sensor)
+
+                res = computeConveyor(res, commandsInLoop.toString()).toMutableList()
+
+                sensor = res.last()
+                res.removeAt(res.size - 1)
+
+                ttl = res.last()
+                res.removeAt(res.size - 1)
+
+                val numberToDelete = commandsInLoop.length
+                commands.delete(0, numberToDelete)
+            }
+        } else
+            if (commands.first().toString() == "]") {
+                countBrace -= 1
+                if (countBrace == -1) throw IllegalArgumentException()
+                if (res[sensor] != 0) {
+
+                    res.add(ttl)
+                    res.add(sensor)
+
+                    res = computeConveyor(res, commandsInLoop.toString()).toMutableList()
+
+                    sensor = res.last()
+                    res.removeAt(res.size - 1)
+
+                    ttl = res.last()
+                    res.removeAt(res.size - 1)
+
+                    commands.deleteCharAt(0)
+                    if (res[sensor] != 0) {
+                        commands.insert(0, "[$commandsInLoop]")
+                    }
+                    commands.insert(0, "]")
+                    ttl -= 1
+                }
+
+            }
+
+        commands.deleteCharAt(0)
+        ttl -= 1
+        if (commands.isEmpty()) break
+    } while (ttl > 0)
+
+
+    res.add(ttl)
+    res.add(sensor)
+    return res
+}
+
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (commands.contains(Regex("""[^><\-+\[\]\s]"""))) throw IllegalArgumentException()
+
+    val x = Regex("""\[""").findAll(commands).toList().size
+    val y = Regex("""]""").findAll(commands).toList().size
+    if (x != y) throw IllegalArgumentException()
+
+    val res = mutableListOf<Int>()
+    for (i in 0 until cells) {
+        res.add(0)
+    }
+
+    val sensor = cells / 2
+    res.add(limit)
+    res.add(sensor)
+    val result = computeConveyor(res, commands).toMutableList()
+    result.removeAt(result.size - 1)
+    result.removeAt(result.size - 1)
+    return result
+}
+
