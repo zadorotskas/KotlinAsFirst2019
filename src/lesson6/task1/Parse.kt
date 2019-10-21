@@ -72,7 +72,7 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
-    val matchResult = ((Regex("""(\d{1,2}) (.*) (\d{1,4})""").find(str)) ?: return "").groupValues.drop(1)
+    val matchResult = ((Regex("""(\d{1,2}) (.*) (\d+)""").find(str)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
         "Февраля",
@@ -110,7 +110,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val matchResult = ((Regex("""(\d{1,2}).(\d{1,2}).(\d{1,4})""").find(digital)) ?: return "").groupValues.drop(1)
+    val matchResult = ((Regex("""(\d{1,2}).(\d{1,2}).(\d+)""").find(digital)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
         "Февраля",
@@ -199,7 +199,7 @@ fun bestHighJump(jumps: String): Int {
     val parts = jumps.split(" +")
     val res = mutableListOf<Int>()
     for (part in parts) {
-        val matchResult = ((Regex("""\D*(\d+)$""").find(part)) ?: break).groupValues.drop(1)
+        val matchResult = ((Regex("""\D*\s(\d+)$""").find(part)) ?: break).groupValues.drop(1)
         res.add(matchResult[0].toInt())
     }
     return res.max() ?: -1
