@@ -75,7 +75,7 @@ fun dateStrToDigit(str: String): String {
     val matchResult = ((Regex("""(\d{1,2}) (.*) (\d+)""").find(str)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
-        "Февраля",
+        "февраля",
         "марта",
         "апреля",
         "мая",
@@ -113,7 +113,7 @@ fun dateDigitToStr(digital: String): String {
     val matchResult = ((Regex("""(\d{1,2}).(\d{1,2}).(\d+)""").find(digital)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
-        "Февраля",
+        "февраля",
         "марта",
         "апреля",
         "мая",
@@ -195,14 +195,15 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    if (jumps.contains(Regex("""[^%\-\s\d+]"""))) return -1
+    if (!jumps.contains(Regex("""(\d+\s([+\-%])+)\s?(\1)*"""))) return -1
     val parts = jumps.split(" +")
     val res = mutableListOf<Int>()
+    if (parts[0].contains(Regex("""^\d+$"""))) res.add(parts[0].toInt())
     for (part in parts) {
-        val matchResult = ((Regex("""\D*\s(\d+)$""").find(part)) ?: break).groupValues.drop(1)
+        val matchResult = ((Regex("""\D*\s(\d+)$""").find(part)) ?: continue).groupValues.drop(1)
         res.add(matchResult[0].toInt())
     }
-    return res.max() ?: -1
+    return res.max()!!
 }
 
 /**
@@ -215,6 +216,7 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
+    if (!expression.contains(Regex("""^((\d+)\s+([-+])\s+)*(\d+)$"""))) throw IllegalArgumentException()
     val parts = expression.split(" ")
     var res = 0
     var k = 1
@@ -227,8 +229,7 @@ fun plusMinus(expression: String): Int {
         }
 
     }
-    if (expression.contains(Regex("""^((\d+)\s+([-+])\s+)*(\d+)$"""))) return res
-    else throw IllegalArgumentException()
+    return res
 }
 
 
@@ -351,7 +352,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
             "+" -> res[sensor] += 1
             "-" -> res[sensor] -= 1
         }
-
+        if (ttl == 1) break
         if (commands.first().toString() == "[") {
             countBrace += 1
             val inLoop = computeCommandsInLoop(commands.toString())
@@ -364,7 +365,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
                 val numberToDelete = inLoop.length
                 commands.delete(0, numberToDelete)
             } else {
-                res.add(ttl)
+                res.add(ttl - 1)
                 res.add(sensor)
 
                 res = computeConveyor(res, commandsInLoop.toString()).toMutableList()
@@ -372,7 +373,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
                 sensor = res.last()
                 res.removeAt(res.size - 1)
 
-                ttl = res.last()
+                ttl = res.last() + 1
                 res.removeAt(res.size - 1)
 
                 val numberToDelete = commandsInLoop.length
@@ -384,7 +385,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
                 if (countBrace == -1) throw IllegalArgumentException()
                 if (res[sensor] != 0) {
 
-                    res.add(ttl)
+                    res.add(ttl - 1)
                     res.add(sensor)
 
                     res = computeConveyor(res, commandsInLoop.toString()).toMutableList()
@@ -392,7 +393,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
                     sensor = res.last()
                     res.removeAt(res.size - 1)
 
-                    ttl = res.last()
+                    ttl = res.last() + 1
                     res.removeAt(res.size - 1)
 
                     commands.deleteCharAt(0)
@@ -400,7 +401,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
                         commands.insert(0, "[$commandsInLoop]")
                     }
                     commands.insert(0, "]")
-                    ttl -= 1
+
                 }
 
             }

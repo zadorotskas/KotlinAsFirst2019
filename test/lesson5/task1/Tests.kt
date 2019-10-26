@@ -293,21 +293,28 @@ class Tests {
                 )
             )
         )
+
         assertEquals(
             mapOf(
-                "1" to setOf(),
-                "0" to setOf("1", "2", "4"),
-                "2" to setOf("0", "1", "3", "4"),
-                "3" to setOf("0", "1", "2"),
-                "4" to setOf("0", "1", "2", "3")
+                "0" to setOf(),
+                "2" to setOf(),
+                "322" to setOf(),
+                "3dc" to setOf(),
+                "25d" to setOf("2"),
+                "1" to setOf("2", "3", "2c", "0"),
+                "2c" to setOf("0"),
+                "3" to setOf("2c", "0")
             ),
             propagateHandshakes(
                 mapOf(
-                    "1" to setOf(),
-                    "0" to setOf("2"),
-                    "2" to setOf("4", "0", "1"),
-                    "3" to setOf("0", "1"),
-                    "4" to setOf("3", "0", "1", "2")
+                    "0" to setOf(),
+                    "2" to setOf(),
+                    "322" to setOf(),
+                    "3dc" to setOf(),
+                    "25d" to setOf("2"),
+                    "1" to setOf("2", "3"),
+                    "2c" to setOf("0"),
+                    "3" to setOf("2c")
                 )
             )
         )
@@ -319,6 +326,10 @@ class Tests {
         assertEquals(
             Pair(0, 1),
             findSumOfTwo(listOf(0, 1), 1)
+        )
+        assertEquals(
+            Pair(0, 1),
+            findSumOfTwo(listOf(0, 0), 0)
         )
         assertEquals(
             Pair(-1, -1),

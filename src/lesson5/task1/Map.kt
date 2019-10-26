@@ -4,6 +4,7 @@ package lesson5.task1
 
 import ru.spbstu.wheels.sorted
 import kotlin.math.abs
+import kotlin.math.max
 
 
 /**
@@ -250,11 +251,12 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     val x = mutableListOf<Char>()
-    for (element in word) {
+    for (element in word.toLowerCase()) {
         x.add(element)
     }
+
     val letters = x.toSet()
-    val setChars = chars.toSet()
+    val setChars = chars.map { it.toLowerCase() }.toSet()
     return (setChars.union(letters) == setChars)
 }
 
@@ -335,13 +337,13 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
         var x = mutableSetOf<String>()
         x.addAll(friend)
         var y: MutableSet<String>
-        for (element in friend) {
-            do {
-                y = x
+        do {
+            y = x
+            for (element in x) {
+                if (element !in res) res[element] = setOf()
                 x = (x + friends.getOrDefault(element, setOf())).toMutableSet()
-            } while (x != y)
-            if (element !in res) res[element] = setOf()
-        }
+            }
+        } while (y != x)
         var del = ""
         for (element in x) if (name == element) del = name
         x.remove(del)
@@ -369,10 +371,15 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     var res = Pair(-1, -1)
+    val map = mutableMapOf<Int, Int>()
+    for ((k, element) in list.withIndex()) {
+        if (number / 2 == 0 && element == number / 2 && map[element] != null) return (map[element]!! to k)
+        map[element] = k
+    }
     val x = number / 2 - 1 * abs(number % 2 - 1)
     for (i in 0..x) {
-        if (list.indexOf(i) != -1 && list.indexOf(number - i) != -1) {
-            res = list.indexOf(i) to list.indexOf(number - i)
+        if (map[i] != null && map[number - i] != null) {
+            res = map[i]!! to map[number - i]!!
             break
         }
     }
@@ -400,4 +407,36 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val res = mutableSetOf<String>()
+    val x = treasures.size
+    val table = Array(x + 1) { Array(capacity + 1) { 0 } }
+    val itemName = mutableListOf<String>()
+    for ((key) in treasures) itemName.add(key)
+
+
+    for (i in 1 until x + 1) {
+        for (j in 0..capacity) {
+            val itemCost = treasures.getValue(itemName[i - 1]).second
+            val itemWeight = treasures.getValue(itemName[i - 1]).first
+            if (itemWeight > j)
+                table[i][j] = table[i - 1][j]
+            else table[i][j] = max(table[i - 1][j], table[i - 1][j - itemWeight] + itemCost)
+        }
+    }
+
+    var y = capacity
+    for (j in capacity downTo 0) {
+        if (j > y) continue
+        for (i in x downTo 1) {
+            if (itemName[i - 1] in res) continue
+            if (table[i][j] > table[i - 1][j]) {
+                res.add(itemName[i - 1])
+                y = j - treasures.getValue(itemName[i - 1]).first
+                break
+            }
+        }
+    }
+
+    return res
+}
