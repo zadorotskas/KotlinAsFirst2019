@@ -408,6 +408,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
 
         commands.deleteCharAt(0)
         ttl -= 1
+        if (sensor !in 0 until res.size) throw IllegalStateException()
         if (commands.isEmpty()) break
     } while (ttl > 0)
 
