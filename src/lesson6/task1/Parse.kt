@@ -382,7 +382,7 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
         } else
             if (commands.first().toString() == "]") {
                 countBrace -= 1
-                if (countBrace == -1) throw IllegalArgumentException()
+                if (countBrace < 0) throw IllegalArgumentException()
                 if (res[sensor] != 0) {
 
                     res.add(ttl - 1)
@@ -421,9 +421,16 @@ fun computeConveyor(list: List<Int>, commandsIn: String): List<Int> {
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (commands.contains(Regex("""[^><\-+\[\]\s]"""))) throw IllegalArgumentException()
 
-    val x = Regex("""\[""").findAll(commands).toList().size
-    val y = Regex("""]""").findAll(commands).toList().size
-    if (x != y) throw IllegalArgumentException()
+    var countBrace = 0
+    val matches = Regex("""[\[\]]""").findAll(commands)
+    val z = matches.map { it.value }.toList()
+    for (part in z) {
+        if (part == "]") countBrace -= 1
+        else countBrace += 1
+        if (countBrace < 0) throw IllegalArgumentException()
+    }
+    if (countBrace != 0) throw IllegalArgumentException()
+
 
     val res = mutableListOf<Int>()
     for (i in 0 until cells) {

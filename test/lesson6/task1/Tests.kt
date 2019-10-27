@@ -132,7 +132,13 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun computeDeviceCells() {
-        assertThrows(IllegalStateException::class.java) { computeDeviceCells(2, "<<", 500) }
+        assertThrows(IllegalArgumentException::class.java) {
+            computeDeviceCells(
+                1,
+                "+[++++++[]++++++]++[++++++++]++++++]++++++++[+++++-++[-++-+++][[<]< [---<--  ++--[ - +-<<<--]+- -+< <+--+-+<+-+----+<-<+----><+<+>-+<- -+--+ <-+--+<< +<+-+< <-]-++-<<-<--[--< --- +--<<]<-+<+<---  <]][<<<[<]-",
+                500
+            )
+        }
         assertEquals(listOf(-250), computeDeviceCells(1, "-[-]", 500))
         assertEquals(listOf(0, 0, 0, 0, 0, 1, 1, 1, 1, 1), computeDeviceCells(10, "+>+>+>+>+", 10000))
         assertEquals(listOf(-1, -1, -1, -1, -1, 0, 0, 0, 0, 0), computeDeviceCells(10, "<-<-<-<-<-", 10000))
