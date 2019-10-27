@@ -435,7 +435,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         if (j > y) continue
         for (i in x downTo 1) {
             if (itemName[i - 1] in res) continue
-            if (table[i][j] > table[i - 1][j] && table[i][j] - table[i - 1][j] == treasures.getValue(itemName[i - 1]).second) {
+            if (table[i][j] > table[i - 1][j]) {
                 res.add(itemName[i - 1])
                 y = j - treasures.getValue(itemName[i - 1]).first
                 break
