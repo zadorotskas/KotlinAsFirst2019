@@ -72,7 +72,7 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
-    val matchResult = ((Regex("""(\d{1,2}) (.*) (\d+)""").find(str)) ?: return "").groupValues.drop(1)
+    val matchResult = ((Regex("""^(\d{1,2}) (.*) (\d+)$""").find(str)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
         "февраля",
@@ -90,7 +90,7 @@ fun dateStrToDigit(str: String): String {
     val m = months.indexOf(matchResult[1]) + 1
     return if ((matchResult[0].toInt() !in 1..daysInMonth(
             m, matchResult[2].toInt()
-        )) || (matchResult[1] !in months) || (matchResult[2].toInt() < 1)
+        )) || (matchResult[1] !in months) || (matchResult[2].toInt() < 0)
     ) ""
     else {
         val day = matchResult[0].toInt()
@@ -110,7 +110,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val matchResult = ((Regex("""(\d{1,2}).(\d{1,2}).(\d+)""").find(digital)) ?: return "").groupValues.drop(1)
+    val matchResult = ((Regex("""^(\d{1,2}).(\d{1,2}).(\d+)$""").find(digital)) ?: return "").groupValues.drop(1)
     val months = listOf(
         "января",
         "февраля",
@@ -127,7 +127,7 @@ fun dateDigitToStr(digital: String): String {
     )
     return if ((matchResult[0].toInt() !in 1..daysInMonth(
             matchResult[1].toInt(), matchResult[2].toInt()
-        )) || (matchResult[1].toInt() !in 1..12) || (matchResult[2].toInt() < 1)
+        )) || (matchResult[1].toInt() !in 1..12) || (matchResult[2].toInt() < 0)
     ) ""
     else {
         val m = months[matchResult[1].toInt() - 1]

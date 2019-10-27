@@ -373,7 +373,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     var res = Pair(-1, -1)
     val map = mutableMapOf<Int, Int>()
     for ((k, element) in list.withIndex()) {
-        if (number / 2 == 0 && element == number / 2 && map[element] != null) return (map[element]!! to k)
+        if (number % 2 == 0 && element == number / 2 && map[element] != null) return (map[element]!! to k)
         map[element] = k
     }
     val x = number / 2 - 1 * abs(number % 2 - 1)
@@ -411,8 +411,13 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     val res = mutableSetOf<String>()
     val x = treasures.size
     val table = Array(x + 1) { Array(capacity + 1) { 0 } }
+
+    val itemDensity = mutableMapOf<String, Double>()
+    for ((itemName, pair) in treasures) itemDensity[itemName] = 1.0 * pair.second / pair.first
+    val sorted = itemDensity.toList().sortedByDescending { (_, value) -> value }.toMap()
+
     val itemName = mutableListOf<String>()
-    for ((key) in treasures) itemName.add(key)
+    for ((key) in sorted) itemName.add(key)
 
 
     for (i in 1 until x + 1) {
@@ -430,7 +435,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         if (j > y) continue
         for (i in x downTo 1) {
             if (itemName[i - 1] in res) continue
-            if (table[i][j] > table[i - 1][j]) {
+            if (table[i][j] > table[i - 1][j] && table[i][j] - table[i - 1][j] == treasures.getValue(itemName[i - 1]).second) {
                 res.add(itemName[i - 1])
                 y = j - treasures.getValue(itemName[i - 1]).first
                 break
