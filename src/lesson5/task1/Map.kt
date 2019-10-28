@@ -412,12 +412,8 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     val x = treasures.size
     val table = Array(x + 1) { Array(capacity + 1) { 0 } }
 
-    val itemDensity = mutableMapOf<String, Double>()
-    for ((itemName, pair) in treasures) itemDensity[itemName] = 1.0 * pair.second / pair.first
-    val sorted = itemDensity.toList().sortedByDescending { (_, value) -> value }.toMap()
-
     val itemName = mutableListOf<String>()
-    for ((key) in sorted) itemName.add(key)
+    for ((key) in treasures) itemName.add(key)
 
 
     for (i in 1 until x + 1) {
@@ -430,18 +426,16 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         }
     }
 
-    var y = capacity
-    for (j in capacity downTo 0) {
-        if (j > y) continue
-        for (i in x downTo 1) {
-            if (itemName[i - 1] in res) continue
-            if (table[i][j] > table[i - 1][j]) {
-                res.add(itemName[i - 1])
-                y = j - treasures.getValue(itemName[i - 1]).first
-                break
-            }
+    fun findRes(n: Int, k: Int): MutableSet<String> {
+        if (table[n][k] == 0)
+            return res
+        return if (table[n][k] == table[n - 1][k])
+            findRes(n - 1, k)
+        else {
+            res.add(itemName[n - 1])
+            findRes(n - 1, k - treasures.getValue(itemName[n - 1]).first)
         }
     }
 
-    return res
+    return findRes(x, capacity)
 }
