@@ -71,22 +71,23 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
+val months = listOf(
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря"
+)
+
 fun dateStrToDigit(str: String): String {
     val matchResult = ((Regex("""^(\d{1,2}) (.*) (\d+)$""").find(str)) ?: return "").groupValues.drop(1)
-    val months = listOf(
-        "января",
-        "февраля",
-        "марта",
-        "апреля",
-        "мая",
-        "июня",
-        "июля",
-        "августа",
-        "сентября",
-        "октября",
-        "ноября",
-        "декабря"
-    )
     val m = months.indexOf(matchResult[1]) + 1
     return if ((matchResult[0].toInt() !in 1..daysInMonth(
             m, matchResult[2].toInt()
@@ -111,20 +112,6 @@ fun dateStrToDigit(str: String): String {
  */
 fun dateDigitToStr(digital: String): String {
     val matchResult = ((Regex("""^(\d{1,2}).(\d{1,2}).(\d+)$""").find(digital)) ?: return "").groupValues.drop(1)
-    val months = listOf(
-        "января",
-        "февраля",
-        "марта",
-        "апреля",
-        "мая",
-        "июня",
-        "июля",
-        "августа",
-        "сентября",
-        "октября",
-        "ноября",
-        "декабря"
-    )
     return if ((matchResult[0].toInt() !in 1..daysInMonth(
             matchResult[1].toInt(), matchResult[2].toInt()
         )) || (matchResult[1].toInt() !in 1..12) || (matchResult[2].toInt() < 0)
@@ -159,8 +146,7 @@ fun flattenPhoneNumber(phone: String): String {
     }
     val res = chars.filter { it.matches(Regex("""\d""")) }
     return when {
-        phone.contains(Regex("""[^\s\-^+\d()]""")) -> ""
-        phone.contains(Regex("""(\(\D*\))""")) -> ""
+        phone.contains(Regex("""[^\s\-^+\d()]|(\(\D*\))""")) -> ""
         phone.contains(Regex("""^\+""")) -> res.joinToString(prefix = "+", separator = "")
         else -> res.joinToString(separator = "")
     }
@@ -179,7 +165,7 @@ fun flattenPhoneNumber(phone: String): String {
 fun bestLongJump(jumps: String): Int {
     if (jumps.contains(Regex("""[^%\-\s\d]"""))) return -1
     val parts = jumps.split(" ")
-    val res = parts.filter { it.contains(Regex("""\d""")) }.map { it.toInt() }
+    val res = parts.filter { it.contains(Regex("""^\d+$""")) }.map { it.toInt() }
     return res.max() ?: -1
 }
 
@@ -195,7 +181,7 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    if (!jumps.contains(Regex("""(\d+\s([+\-%])+)\s?(\1)*"""))) return -1
+    if (!jumps.contains(Regex("""^((\d+\s([+\-%])+)\s?)+$"""))) return -1
     val parts = jumps.split(" +")
     val res = mutableListOf<Int>()
     if (parts[0].contains(Regex("""^\d+$"""))) res.add(parts[0].toInt())
@@ -222,8 +208,11 @@ fun plusMinus(expression: String): Int {
     var k = 1
     for (i in parts.indices) {
         when {
-            i % 2 == 0 ->
-                res += parts[i].toInt() * k
+            i % 2 == 0 -> {
+                if (parts[i].contains(Regex("""^\d+$""")))
+                    res += parts[i].toInt() * k
+                else throw IllegalArgumentException()
+            }
             (parts[i] == "+") && (i % 2 != 0) -> k = 1
             (parts[i] == "-") && (i % 2 != 0) -> k = -1
         }
