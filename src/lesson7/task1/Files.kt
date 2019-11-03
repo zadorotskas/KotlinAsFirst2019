@@ -57,7 +57,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val res = mutableMapOf<String, Int>()
 
     for (line in File(inputName).readLines()) {
-        for (string in substrings) {
+        for (string in substrings.toSet()) {
             var count = 0
             val y = line.toLowerCase()
             val x = string.toLowerCase()
@@ -131,9 +131,7 @@ fun centerFile(inputName: String, outputName: String) {
     }
     File(outputName).bufferedWriter().use {
         for (line in File(inputName).readLines()) {
-            val matchResult = (Regex("""\s*(.*)""").find(line)!!).groupValues.drop(1)
-            val m = if (line.isNotEmpty()) matchResult[0]
-            else ""
+            val m = line.trim()
             val n = (maxLength - m.length) / 2
 
             it.write(" ".repeat(n))
@@ -222,7 +220,26 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val res = mutableMapOf<String, Int>()
+
+    for (line in File(inputName).readLines()) {
+        val words = Regex("""([a-zA-zа-яА-яёЁ]+)""").findAll(line).map { it.groupValues[1] }
+        for (word in words) res[word.toLowerCase()] = res.getOrDefault(word.toLowerCase(), 0) + 1
+    }
+    return if (res.size < 21) res
+    else {
+        val res1 = res.toList().sortedByDescending { (_, value) -> value }.toMap()
+        val result = mutableMapOf<String, Int>()
+        var k = 0
+        for ((key, value) in res1) {
+            result[key] = value
+            k++
+            if (k == 20) break
+        }
+        result
+    }
+}
 
 /**
  * Средняя
