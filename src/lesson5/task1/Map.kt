@@ -135,7 +135,7 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *   subtractOf(a = mutableMapOf("a" to "z"), mapOf("a" to "z"))
  *     -> a changes to mutableMapOf() aka becomes empty
  */
-fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit {
+fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
     for ((key, value) in b) {
         if (a[key] == value) a.remove(key)
     }
@@ -340,7 +340,8 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
             }
         } while (y != x)
         var del = ""
-        for (element in x) if (name == element) del = name
+        for (element in x)
+            if (name == element) del = name
         x.remove(del)
         res[name] = (x.sorted()).toSet()
     }

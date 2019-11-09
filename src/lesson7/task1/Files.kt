@@ -189,7 +189,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             resLine = StringBuilder(words.joinToString(separator = " "))
             var k = 0
             val n = words.size - 1
-            var length = words[k % n].length
+            var length = words[0].length
             while (resLine.length != maxLength) {
                 resLine.insert(length, " ")
                 k++
@@ -225,19 +225,12 @@ fun top20Words(inputName: String): Map<String, Int> {
 
     for (line in File(inputName).readLines()) {
         val words = Regex("""([a-zA-zа-яА-яёЁ]+)""").findAll(line).map { it.groupValues[1] }
-        for (word in words) res[word.toLowerCase()] = res.getOrDefault(word.toLowerCase(), 0) + 1
+        for (word in words)
+            res[word.toLowerCase()] = res.getOrDefault(word.toLowerCase(), 0) + 1
     }
     return if (res.size < 21) res
     else {
-        val res1 = res.toList().sortedByDescending { (_, value) -> value }.toMap()
-        val result = mutableMapOf<String, Int>()
-        var k = 0
-        for ((key, value) in res1) {
-            result[key] = value
-            k++
-            if (k == 20) break
-        }
-        result
+        res.toList().sortedByDescending { (_, value) -> value }.take(20).toMap()
     }
 }
 
@@ -277,7 +270,26 @@ fun top20Words(inputName: String): Map<String, Int> {
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            for (char in line) {
+                val replacement: String = if (dictionary[char.toLowerCase()] != null) {
+                    dictionary.getValue(char.toLowerCase()).toLowerCase()
+                } else if (dictionary[char.toUpperCase()] != null) {
+                    dictionary.getValue(char.toUpperCase()).toLowerCase()
+                } else {
+                    it.write(char.toString())
+                    continue
+                }
+                if (char.isUpperCase() && replacement.isNotEmpty()) {
+                    it.write(replacement.capitalize())
+                } else {
+                    it.write(replacement)
+                }
+            }
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -305,7 +317,29 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val res = StringBuilder("")
+    var maxLength = 0
+    for (line in File(inputName).readLines()) {
+        var differentLetters = 0
+        var k = -1
+        for (char in line) {
+            k++
+            val wordWithoutChar = StringBuilder(line.toLowerCase()).deleteCharAt(k)
+            if (!wordWithoutChar.contains(char.toLowerCase())) differentLetters++
+        }
+        if (differentLetters == line.length) {
+            if (differentLetters > maxLength) {
+                res.delete(0, res.length)
+                res.append(line)
+                maxLength = differentLetters
+            } else if (differentLetters == maxLength) {
+                res.append(", $line")
+            }
+        }
+    }
+    File(outputName).bufferedWriter().use {
+        it.write(res.toString())
+    }
 }
 
 /**
@@ -354,7 +388,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    markdownToHtml(inputName, outputName)
 }
 
 /**
@@ -457,7 +491,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    markdownToHtml(inputName, outputName)
 }
 
 /**
@@ -469,7 +503,95 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    TODO()
+    val tags = mutableListOf<String>()
+    val writer = File(outputName).bufferedWriter()
+
+    fun addTag(inputTag: String) {
+        writer.write(inputTag)
+        tags.add(inputTag)
+    }
+
+    fun closeOrAddTag(inputTag: String) {
+        if (tags.last() == inputTag) {
+            val closingTag = StringBuilder(inputTag)
+            closingTag.insert(1, "/")
+            writer.write(closingTag.toString())
+            tags.removeAt(tags.size - 1)
+        } else {
+            addTag(inputTag)
+        }
+    }
+
+    var k = 0
+
+    fun list(line: String) {
+        val x = Regex("""[*]""").findAll(line).toList().size
+        val y = (Regex("""(^\s*)""").find(line)!!).groupValues.drop(1).toString()
+        val spaces = y.length - 2
+        if (line.trim().first() == '*' && x % 2 != 0 && spaces == k) {
+            addTag("<ul>")
+            k += 4
+        } else if (line.trim().contains(Regex("""^\d+\.""")) && spaces == k) {
+            k += 4
+            addTag("<ol>")
+        } else if (spaces == k - 8) {
+            closeOrAddTag(tags.last())
+            closeOrAddTag(tags.last())
+            k -= 4
+        }
+    }
+    addTag("<html>")
+    addTag("<body>")
+    for (line in File(inputName).readLines()) {
+        if (line.isEmpty()) {
+            addTag("<p>")
+            break
+        }
+    }
+    for (line in File(inputName).readLines()) {
+
+        if (line.isEmpty()) {
+            for (i in tags.size - 1 downTo 0) {
+                val x = tags[i]
+                closeOrAddTag(x)
+                if (x == "<p>") break
+            }
+            if (tags.last() != "<p>") addTag("<p>")
+            continue
+        } else list(line)
+
+        if (tags.last() == "<li>") closeOrAddTag("<li>")
+
+        val z = when {
+            tags.last() == "<ol>" -> k - 6 + (Regex("""(^\d+\.)""").find(line.trim())!!).groupValues.drop(1).toString().length
+            tags.last() == "<ul>" -> k - 4 + 1
+            else -> 0
+        }
+
+        if (tags.contains("<ul>") || tags.contains("<ol>")) addTag("<li>")
+        loop@ for (i in z..line.length - 2) {
+            if (i > 2) {
+                when {
+                    line[i] == '*' && line[i - 1] == '*' && line[i - 2] != '*' -> continue@loop
+                    line[i] == '~' && line[i - 1] == '~' -> continue@loop
+                }
+            }
+            when {
+                line[i] == '*' && line[i + 1] == '*' -> closeOrAddTag("<b>")
+                line[i] == '~' && line[i + 1] == '~' -> closeOrAddTag("<s>")
+                line[i] == '*' -> closeOrAddTag("<i>")
+                else -> writer.write(line[i].toString())
+            }
+        }
+
+        writer.write(line.last().toString())
+        writer.newLine()
+    }
+
+    for (i in tags.size - 1 downTo 0) {
+        closeOrAddTag(tags[i])
+    }
+    writer.close()
 }
 
 /**
