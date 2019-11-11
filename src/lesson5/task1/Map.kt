@@ -372,7 +372,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
         if (number % 2 == 0 && element == number / 2 && map[element] != null) return (map[element]!! to k)
         map[element] = k
     }
-    val x = number / 2 - 1 * abs(number % 2 - 1)
+    val x = number / 2 - abs(number % 2 - 1)
     for (i in 0..x) {
         if (map[i] != null && map[number - i] != null) {
             res = map[i]!! to map[number - i]!!

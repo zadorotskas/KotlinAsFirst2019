@@ -570,7 +570,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
 
         if (tags.contains("<ul>") || tags.contains("<ol>")) addTag("<li>")
         loop@ for (i in z..line.length - 2) {
-            if (i > 2) {
+            if (i > 1) {
                 when {
                     line[i] == '*' && line[i - 1] == '*' && line[i - 2] != '*' -> continue@loop
                     line[i] == '~' && line[i - 1] == '~' -> continue@loop
