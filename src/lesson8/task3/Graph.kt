@@ -42,11 +42,30 @@ class Graph {
             if (next == finish) return distance
             for (neighbor in next.neighbors) {
                 if (neighbor in visited) continue
-                visited[neighbor] = distance + 1
+                visited.put(neighbor, distance + 1)
                 queue.add(neighbor)
             }
         }
         return -1
+    }
+
+    fun findWay(start: String, finish: String) = findWay(this[start], this[finish])
+
+    private fun findWay(start: Vertex, finish: Vertex): List<String> {
+        val queue = ArrayDeque<Vertex>()
+        queue.add(start)
+        val visited = mutableMapOf(start to listOf(start.name))
+        while (queue.isNotEmpty()) {
+            val next = queue.poll()
+            val way = visited[next]!!
+            if (next == finish) return way
+            for (neighbor in next.neighbors) {
+                if (neighbor in visited) continue
+                visited[neighbor] = way + neighbor.name
+                queue.add(neighbor)
+            }
+        }
+        return listOf()
     }
 
     /**
