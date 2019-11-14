@@ -3,7 +3,7 @@
 package lesson8.task2
 
 import lesson8.task3.Graph
-import java.lang.Math.abs
+import kotlin.math.abs
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -41,7 +41,7 @@ data class Square(val column: Int, val row: Int) {
  */
 fun square(notation: String): Square {
     if (!notation.first().toString().matches(Regex("""([a-h])""")) ||
-        notation.last().toString().toInt() !in 1..8 || notation.length != 2
+        notation.last().toString().toInt() !in 1..8 || notation.length != 2 || notation.isEmpty()
     )
         throw IllegalArgumentException()
     val x = 'a'.toInt() - 1
@@ -131,7 +131,7 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
     return when {
         (start.column + start.row) % 2 != (end.column + end.row) % 2 -> -1
         start.row == end.row && start.column == end.column -> 0
-        end.column + start.row == end.row + start.column -> 1
+        start.column + start.row == end.row + end.column || start.row - start.column == end.row - end.column -> 1
         else -> 2
     }
 }
@@ -223,10 +223,14 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     res.add(start)
     moves--
     while (moves > 0) {
-        val x = end.column - start.column
-        val y = end.row - start.row
-        val nextColumn = res.last().column + x / abs(x)
-        val nextRow = res.last().row + y / abs(y)
+        val x = end.column - res.last().column
+        val y = end.row - res.last().row
+        val x1 = if (x == 0) 1
+        else abs(x)
+        val y1 = if (y == 0) 1
+        else abs(y)
+        val nextColumn = res.last().column + x / x1
+        val nextRow = res.last().row + y / y1
         res.add(Square(nextColumn, nextRow))
         moves--
     }

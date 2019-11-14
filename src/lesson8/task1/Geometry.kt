@@ -195,7 +195,7 @@ fun lineByPoints(a: Point, b: Point): Line {
     return when {
         b.x - a.x == 0.0 -> Line(a, PI / 2)
         k < 0 -> Line(a, atan(k) + PI)
-        else -> Line(a, atan(k))
+        else -> Line(a, atan(k) % PI)
     }
 }
 
@@ -303,7 +303,8 @@ fun minContainingCircle(vararg points: Point): Circle {
 
     val circle1 = circleByDiameter(diameter(*points))
     val circle2 = circleByThreePoints(distantPoints[0], distantPoints[1], distantPoints[2])
-    return if (circle1.radius < circle2.radius && points.all { circle1.contains(it) }) circle1
+    return if (points.all { circle1.contains(it) } &&
+        circle1.radius < circle2.radius || !points.all { circle2.contains(it) }) circle1
     else circle2
 }
 
