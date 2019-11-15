@@ -27,8 +27,7 @@ data class Square(val column: Int, val row: Int) {
      */
     fun notation(): String {
         if (column !in 1..8 || row !in 1..8) return ""
-        val x = 'a'.toInt() - 1
-        return "${(column + x).toChar()}$row"
+        return "${'a' + column - 1}$row"
     }
 }
 
@@ -40,10 +39,10 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
+    if (notation.length != 2) throw IllegalArgumentException()
     if (!notation.first().toString().matches(Regex("""([a-h])""")) ||
-        notation.last().toString().toInt() !in 1..8 || notation.length != 2 || notation.isEmpty()
-    )
-        throw IllegalArgumentException()
+        !notation.last().toString().matches(Regex("""([1-8])"""))
+    ) throw IllegalArgumentException()
     val x = 'a'.toInt() - 1
     return Square(notation.first().toInt() - x, notation.last().toString().toInt())
 }
@@ -296,14 +295,11 @@ fun knightTrajectory(start: Square, end: Square): List<Square> {
 
     for (i in 1..8) {
         for (j in 1..8) {
-            if (Square(i - 2, j - 1).inside()) graph.connect("$i, $j", "${i - 2}, ${j - 1}")
-            if (Square(i - 2, j + 1).inside()) graph.connect("$i, $j", "${i - 2}, ${j + 1}")
-            if (Square(i - 1, j - 2).inside()) graph.connect("$i, $j", "${i - 1}, ${j - 2}")
-            if (Square(i - 1, j + 2).inside()) graph.connect("$i, $j", "${i - 1}, ${j + 2}")
-            if (Square(i + 2, j - 1).inside()) graph.connect("$i, $j", "${i + 2}, ${j - 1}")
-            if (Square(i + 2, j + 1).inside()) graph.connect("$i, $j", "${i + 2}, ${j + 1}")
-            if (Square(i + 1, j - 2).inside()) graph.connect("$i, $j", "${i + 1}, ${j - 2}")
-            if (Square(i + 1, j + 2).inside()) graph.connect("$i, $j", "${i + 1}, ${j + 2}")
+            for (k in 0..7) {
+                val x = (k % 2 + 1) * -1 * ((k / 4) * 2 - 1)
+                val y = ((k + 1) % 2 + 1) * (-1) * (((k % 4) / 2) * 2 - 1)
+                if (Square(i + x, j + y).inside()) graph.connect("$i, $j", "${i + x}, ${j + y}")
+            }
         }
     }
 

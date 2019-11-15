@@ -4,7 +4,6 @@ import lesson8.task1.Direction.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 
 class HexTests {
 
@@ -107,8 +106,8 @@ class HexTests {
         assertEquals(
             listOf(
                 HexPoint(y = 2, x = 2),
-                HexPoint(y = 2, x = 3),
-                HexPoint(y = 3, x = 3),
+                HexPoint(y = 3, x = 2),
+                HexPoint(y = 4, x = 2),
                 HexPoint(y = 4, x = 3),
                 HexPoint(y = 5, x = 3)
             ), pathBetweenHexes(HexPoint(y = 2, x = 2), HexPoint(y = 5, x = 3))

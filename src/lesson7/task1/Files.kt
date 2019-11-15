@@ -90,13 +90,13 @@ fun sibilants(inputName: String, outputName: String) {
             it.write(line[0].toString())
             for (i in 0..line.length - 2) {
                 if (line[i].toString().contains(Regex("""[ЖжЧчШшЩщ]"""))) {
-                    when (line[i + 1].toString()) {
-                        "Ы" -> it.write("И")
-                        "ы" -> it.write("и")
-                        "Я" -> it.write("А")
-                        "я" -> it.write("а")
-                        "Ю" -> it.write("У")
-                        "ю" -> it.write("у")
+                    when (line[i + 1]) {
+                        'ы'.toUpperCase() -> it.write("и".toUpperCase())
+                        'ы' -> it.write("и")
+                        'я'.toUpperCase() -> it.write("а".toUpperCase())
+                        'я' -> it.write("а")
+                        'ю'.toUpperCase() -> it.write("у".toUpperCase())
+                        'ю' -> it.write("у")
                     }
                     if (line[i + 1].toString().contains(Regex("""[ЫыЯяЮю]"""))) continue
                 }

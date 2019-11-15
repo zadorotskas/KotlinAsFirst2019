@@ -158,6 +158,8 @@ class Line private constructor(val b: Double, val angle: Double) {
     fun crossPoint(other: Line): Point {
         val nominator = other.b * cos(angle) - b * cos(other.angle)
         val denominator = sin(angle) * cos(other.angle) - sin(other.angle) * cos(angle)
+        if (denominator == 0.0) throw IllegalArgumentException()
+
         val x = nominator / denominator
         val y = if (angle != PI / 2)
             (x * sin(angle) + b) / cos(angle)
@@ -193,8 +195,9 @@ fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
 fun lineByPoints(a: Point, b: Point): Line {
     val k = (b.y - a.y) / (b.x - a.x)
     return when {
-        b.x - a.x == 0.0 -> Line(a, PI / 2)
+        b.x == a.x -> Line(a, PI / 2)
         k < 0 -> Line(a, atan(k) + PI)
+        b.y == a.y -> Line(a, 0.0)
         else -> Line(a, atan(k) % PI)
     }
 }
@@ -220,8 +223,8 @@ fun bisectorByPoints(a: Point, b: Point): Line {
 fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
     if (circles.size < 2) throw IllegalArgumentException()
     var minLength = Double.MAX_VALUE
-    var min1 = circles[1]
-    var min2 = circles[2]
+    var min1 = circles[0]
+    var min2 = circles[1]
     for (i in circles.indices) {
         for (j in i + 1 until circles.size) {
             val distance = circles[i].distance(circles[j])

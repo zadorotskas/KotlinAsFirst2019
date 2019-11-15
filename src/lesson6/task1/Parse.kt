@@ -86,13 +86,13 @@ val months = listOf(
     "декабря"
 )
 
+fun dateChecker(day: Int, month: Int, year: Int): Boolean =
+    (day !in 1..daysInMonth(month, year) || month !in 1..12 || year < 0)
+
 fun dateStrToDigit(str: String): String {
     val matchResult = ((Regex("""^(\d{1,2}) (.*) (\d+)$""").find(str)) ?: return "").groupValues.drop(1)
     val m = months.indexOf(matchResult[1]) + 1
-    return if ((matchResult[0].toInt() !in 1..daysInMonth(
-            m, matchResult[2].toInt()
-        )) || (matchResult[1] !in months) || (matchResult[2].toInt() < 0)
-    ) ""
+    return if (dateChecker(matchResult[0].toInt(), months.indexOf(matchResult[1]) + 1, matchResult[2].toInt())) ""
     else {
         val day = matchResult[0].toInt()
         val year = matchResult[2].toInt()
@@ -112,10 +112,7 @@ fun dateStrToDigit(str: String): String {
  */
 fun dateDigitToStr(digital: String): String {
     val matchResult = ((Regex("""^(\d{1,2}).(\d{1,2}).(\d+)$""").find(digital)) ?: return "").groupValues.drop(1)
-    return if ((matchResult[0].toInt() !in 1..daysInMonth(
-            matchResult[1].toInt(), matchResult[2].toInt()
-        )) || (matchResult[1].toInt() !in 1..12) || (matchResult[2].toInt() < 0)
-    ) ""
+    return if (dateChecker(matchResult[0].toInt(), matchResult[1].toInt(), matchResult[2].toInt())) ""
     else {
         val m = months[matchResult[1].toInt() - 1]
         val res = matchResult.toMutableList()
@@ -140,13 +137,9 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    val chars = mutableListOf<String>()
-    for (element in phone) {
-        chars.add(element.toString())
-    }
-    val res = chars.filter { it.matches(Regex("""\d""")) }
+    val res = phone.toList().filter { it.toString().matches(Regex("""\d""")) }
     return when {
-        !phone.matches(Regex("""(^\+)?[\s\-\d]*(\([\s\-\d]+\))?[\s\-\d]*""")) -> ""
+        !phone.matches(Regex("""(^\+)?[\s\-\d]*(\([\s\-\d]+\))?[\s\-\d]*""")) || res.isEmpty() -> ""
         phone.contains(Regex("""^\+""")) -> res.joinToString(prefix = "+", separator = "")
         else -> res.joinToString(separator = "")
     }
@@ -182,11 +175,10 @@ fun bestLongJump(jumps: String): Int {
  */
 fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""\d+\s([+\-%])+(\s\d+\s([+\-%])+)*"""))) return -1
-    val parts = jumps.split(" +")
+    val parts = jumps.split("+")
     val res = mutableListOf<Int>()
-    res.add(parts[0].toInt())
-    for (part in parts) {
-        val matchResult = ((Regex("""\D*\s(\d+)$""").find(part)) ?: continue).groupValues.drop(1)
+    for (part in parts.subList(0, parts.size - 1)) {
+        val matchResult = ((Regex("""(\d+)\s[-%]*$""").find(part)) ?: continue).groupValues.drop(1)
         res.add(matchResult[0].toInt())
     }
     return res.max()!!
