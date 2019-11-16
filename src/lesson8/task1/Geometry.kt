@@ -114,7 +114,7 @@ fun diameter(vararg points: Point): Segment {
     var res: Segment? = null
     for (i in points.indices) {
         for (j in i + 1 until points.size) {
-            if (points[i].distance(points[j]) > maxDistance) {
+            if (points[i].distance(points[j]) >= maxDistance) {
                 maxDistance = points[i].distance(points[j])
                 res = Segment(points[i], points[j])
             }
@@ -144,7 +144,7 @@ fun circleByDiameter(diameter: Segment): Circle {
  */
 class Line private constructor(val b: Double, val angle: Double) {
     init {
-        require(angle >= 0 && angle < PI) { "Incorrect line angle: $angle" }
+        require(angle in 0.0..PI) { "Incorrect line angle: $angle" }
     }
 
     constructor(point: Point, angle: Double) : this(point.y * cos(angle) - point.x * sin(angle), angle)
@@ -198,7 +198,7 @@ fun lineByPoints(a: Point, b: Point): Line {
         b.x == a.x -> Line(a, PI / 2)
         k < 0 -> Line(a, atan(k) + PI)
         b.y == a.y -> Line(a, 0.0)
-        else -> Line(a, atan(k) % PI)
+        else -> Line(a, atan(k))
     }
 }
 
@@ -210,8 +210,8 @@ fun lineByPoints(a: Point, b: Point): Line {
 fun bisectorByPoints(a: Point, b: Point): Line {
     val x = (a.x + b.x) / 2
     val y = (a.y + b.y) / 2
-    val angle = if (lineByPoints(a, b).angle == PI / 2) 0.0
-    else (lineByPoints(a, b).angle + PI / 2) % PI
+    val angle = if (lineByPoints(a, b).angle >= PI / 2) lineByPoints(a, b).angle - PI / 2
+    else lineByPoints(a, b).angle + PI / 2
     return Line(Point(x, y), angle)
 }
 
@@ -269,7 +269,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  */
 fun minContainingCircle(vararg points: Point): Circle {
     if (points.isEmpty()) throw IllegalArgumentException()
-    if (points.size == 1) return Circle(points[1], 0.0)
+    if (points.size == 1) return Circle(points[0], 0.0)
     if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
 
 
