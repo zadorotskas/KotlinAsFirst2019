@@ -76,12 +76,12 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double {
-        return if (max(radius, other.radius) - min(radius, other.radius) >= center.distance(other.center) ||
+    fun distance(other: Circle): Double =
+        if (max(radius, other.radius) - min(radius, other.radius) >= center.distance(other.center) ||
             center.distance(other.center) <= radius + other.radius
         ) 0.0
         else center.distance(other.center) - radius - other.radius
-    }
+
 
     /**
      * Тривиальная
@@ -210,7 +210,8 @@ fun lineByPoints(a: Point, b: Point): Line {
 fun bisectorByPoints(a: Point, b: Point): Line {
     val x = (a.x + b.x) / 2
     val y = (a.y + b.y) / 2
-    val angle = (lineByPoints(a, b).angle + PI / 2) % PI
+    val angle = if (lineByPoints(a, b).angle == PI / 2) 0.0
+    else (lineByPoints(a, b).angle + PI / 2) % PI
     return Line(Point(x, y), angle)
 }
 
