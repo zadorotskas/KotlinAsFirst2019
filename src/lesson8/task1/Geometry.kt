@@ -308,11 +308,15 @@ fun minContainingCircle(vararg points: Point): Circle {
     for (i in distantPoints.indices) {
         for (j in i + 1 until distantPoints.size) {
             for (k in j + 1 until distantPoints.size) {
-                val currentCircle = circleByThreePoints(
-                    distantPoints[i],
-                    distantPoints[j],
-                    distantPoints[k]
-                )
+                val currentCircle = try {
+                    circleByThreePoints(
+                        distantPoints[i],
+                        distantPoints[j],
+                        distantPoints[k]
+                    )
+                } catch (e: IllegalArgumentException) {
+                    continue
+                }
                 if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
                     res = currentCircle
                     minRadius = currentCircle.radius
