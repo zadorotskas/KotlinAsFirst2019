@@ -63,7 +63,7 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  *  9  8  7  6
  */
 fun generateSpiral(height: Int, width: Int): Matrix<Int> {
-    val res = createMatrix(height, width, 0)
+    val res = createMatrix(height, width, 1)
     var currentNumber = 1
     var currentRow = height
     var currentColumn = 1
@@ -125,7 +125,7 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
  *  1  1  1  1  1  1
  */
 fun generateRectangles(height: Int, width: Int): Matrix<Int> {
-    val res = createMatrix(height, width, 0)
+    val res = createMatrix(height, width, 1)
     val radius = max(height, width) / 2
 
     fun filling(indent: Int, numberToFill: Int) {
@@ -159,7 +159,7 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
  * 14 17 19 20
  */
 fun generateSnake(height: Int, width: Int): Matrix<Int> {
-    val res = createMatrix(height, width, 0)
+    val res = createMatrix(height, width, 1)
     var currentRow = height
     var currentColumn = width
 

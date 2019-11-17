@@ -304,7 +304,9 @@ fun minContainingCircle(vararg points: Point): Circle {
 
     if (distantPoints.size == 2) return res
 
-    var minRadius = Double.MAX_VALUE
+    var minRadius = if (points.all { res.contains(it) }) res.radius
+    else Double.MAX_VALUE
+
     for (i in distantPoints.indices) {
         for (j in i + 1 until distantPoints.size) {
             for (k in j + 1 until distantPoints.size) {
