@@ -88,7 +88,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) <= radius
+    fun contains(p: Point): Boolean = center.distance(p) <= radius + 1e-6
 }
 
 /**
@@ -292,23 +292,35 @@ fun minContainingCircle(vararg points: Point): Circle {
         }
     }
 
-    val center = Point((minX + maxX) / 2, (minY + maxY) / 2)
 
     val pointsMaxY = points.filter { it.y == maxY }.toSet()
     val pointsMaxX = points.filter { it.x == maxX }.toSet()
     val pointsMinY = points.filter { it.y == minY }.toSet()
     val pointsMinx = points.filter { it.x == minX }.toSet()
 
-    val distantPoints =
-        (pointsMaxY + pointsMaxX + pointsMinY + pointsMinx).toList().sortedByDescending { it.distance(center) }
+    val distantPoints = (pointsMaxY + pointsMaxX + pointsMinY + pointsMinx).toTypedArray()
 
-    if (distantPoints.size == 2) return circleByDiameter(Segment(distantPoints[0], distantPoints[1]))
+    var res = circleByDiameter(diameter(*distantPoints))
 
+    if (distantPoints.size == 2) return res
 
-    val circle1 = circleByDiameter(diameter(*points))
-    val circle2 = circleByThreePoints(distantPoints[0], distantPoints[1], distantPoints[2])
-    return if (points.all { circle1.contains(it) } &&
-        circle1.radius < circle2.radius || !points.all { circle2.contains(it) }) circle1
-    else circle2
+    var minRadius = Double.MAX_VALUE
+    for (i in distantPoints.indices) {
+        for (j in i + 1 until distantPoints.size) {
+            for (k in j + 1 until distantPoints.size) {
+                val currentCircle = circleByThreePoints(
+                    distantPoints[i],
+                    distantPoints[j],
+                    distantPoints[k]
+                )
+                if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
+                    res = currentCircle
+                    minRadius = currentCircle.radius
+                }
+            }
+        }
+    }
+
+    return res
 }
 

@@ -188,10 +188,7 @@ class Tests {
     @Test
     @Tag("Hard")
     fun bisectorByPoints() {
-        assertApproxEquals(
-            Line(Point(0.0, -5.146987386987737e-17), 3.141592653589793),
-            bisectorByPoints(Point(0.42028341482387166, 5e-324), Point(0.9317332193317966, 0.0))
-        )
+
         assertApproxEquals(Line(Point(2.0, 0.0), PI / 2), bisectorByPoints(Point(0.0, 0.0), Point(4.0, 0.0)))
         assertApproxEquals(Line(Point(1.0, 2.0), 0.0), bisectorByPoints(Point(1.0, 5.0), Point(1.0, -1.0)))
     }
