@@ -52,26 +52,26 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
  * Реализация интерфейса "матрица"
  */
 class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : Matrix<E> {
-    private val map = mutableMapOf<Cell, E>()
+    private val array = MutableList(height) { MutableList(width) { e } }
 
     init {
-        for (i in 0 until height) {
-            for (j in 0 until width) {
-                map[Cell(i, j)] = e
+        for (row in 0 until height) {
+            for (column in 0 until width) {
+                array[row][column] = e
             }
         }
     }
 
     override fun get(row: Int, column: Int): E = get(Cell(row, column))
 
-    override fun get(cell: Cell): E = map[cell] ?: throw IllegalArgumentException()
+    override fun get(cell: Cell): E = array[cell.row][cell.column]
 
     override fun set(row: Int, column: Int, value: E) {
         set(Cell(row, column), value)
     }
 
     override fun set(cell: Cell, value: E) {
-        map[cell] = value
+        array[cell.row][cell.column] = value
     }
 
     override fun equals(other: Any?) = other is MatrixImpl<*> && height == other.height && width == other.width
@@ -82,7 +82,7 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : M
         for (row in 0 until height) {
             sb.append("[")
             for (column in 0 until width) {
-                sb.append(this[row, column])
+                sb.append(array[row][column])
                 sb.append(", ")
             }
             sb.delete(sb.length - 2, sb.length)
@@ -95,8 +95,9 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : M
     override fun hashCode(): Int {
         var result = height
         result = 31 * result + width
-        result = 31 * result + map.hashCode()
+        result = 31 * result + array.hashCode()
         return result
     }
+
 }
 

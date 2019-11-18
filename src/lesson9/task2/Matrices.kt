@@ -4,7 +4,6 @@ package lesson9.task2
 
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
-import kotlin.math.max
 import kotlin.math.min
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
@@ -65,12 +64,12 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
 fun generateSpiral(height: Int, width: Int): Matrix<Int> {
     val res = createMatrix(height, width, 1)
     var currentNumber = 1
-    var currentRow = height
-    var currentColumn = 1
+    var currentRow = height - 1
+    var currentColumn = 0
     val numberOfTurns = height + min(height, width) - 1
     var x = numberOfTurns
     while (x > 0) {
-        val indent = (numberOfTurns - x) / 4
+        val indent = (numberOfTurns - x) / 4 + 1
         when ((numberOfTurns - x) % 4) {
             0 -> {
                 for (i in currentColumn..width - indent) {
@@ -125,17 +124,17 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
  *  1  1  1  1  1  1
  */
 fun generateRectangles(height: Int, width: Int): Matrix<Int> {
-    val res = createMatrix(height, width, 1)
-    val radius = max(height, width) / 2
+    val res = createMatrix(height, width, 0)
+    val radius = min(height, width) / 2 + 1
 
     fun filling(indent: Int, numberToFill: Int) {
-        for (i in 1 + indent..height - indent) {
-            res[i, 1 + indent] = numberToFill
-            res[i, width - indent] = numberToFill
+        for (i in 0 + indent..height - 1 - indent) {
+            res[i, 0 + indent] = numberToFill
+            res[i, width - 1 - indent] = numberToFill
         }
-        for (i in 2 + indent..width - indent - 1) {
-            res[1 + indent, i] = numberToFill
-            res[width - indent, i] = numberToFill
+        for (i in 1 + indent..width - indent - 2) {
+            res[0 + indent, i] = numberToFill
+            res[height - 1 - indent, i] = numberToFill
         }
     }
 
@@ -159,22 +158,24 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
  * 14 17 19 20
  */
 fun generateSnake(height: Int, width: Int): Matrix<Int> {
-    val res = createMatrix(height, width, 1)
-    var currentRow = height
-    var currentColumn = width
+    val res = createMatrix(height, width, 0)
+    var currentRow = 0
+    var currentColumn = 0
 
     for (i in 1..height * width) {
         res[currentRow, currentColumn] = i
-        currentColumn = if (currentColumn == 1) {
-            val column = height - currentRow + 1
-            if (column > width) width
-            else column
-        } else currentColumn - 1
-        currentRow = if (currentRow == 1) {
-            val row = width - currentColumn + 1
-            if (row > height) height
-            else row
-        } else currentRow - 1
+        currentColumn -= 1
+        currentRow += 1
+
+        if (currentColumn < 0 || currentRow > height - 1) {
+            val x = currentColumn
+            currentColumn = if (currentRow < width - 1) currentRow
+            else width - 1
+            currentRow = when {
+                currentRow < width -> 0
+                else -> currentRow - width + x + 2
+            }
+        }
     }
     return res
 }
