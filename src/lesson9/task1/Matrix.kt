@@ -80,7 +80,7 @@ class MatrixImpl<E>(override val height: Int, override val width: Int) : Matrix<
         for (row in 1..height) {
             sb.append("[")
             for (column in 1..width) {
-                sb.append(this[row, column])
+                sb.append(map.get(Cell(row, column)))
                 sb.append(", ")
             }
             sb.deleteCharAt(sb.length)

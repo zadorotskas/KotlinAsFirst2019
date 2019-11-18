@@ -553,8 +553,8 @@ fun markdownToHtml(inputName: String, outputName: String) {
         if (line.isEmpty()) {
             for (i in tags.size - 1 downTo 0) {
                 val x = tags[i]
-                if (x == "<p>") break
                 closeOrAddTag(x)
+                if (x == "<p>") break
             }
             if (tags.last() != "<p>") addTag("<p>")
             continue

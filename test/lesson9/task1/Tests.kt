@@ -1,6 +1,6 @@
 package lesson9.task1
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -11,6 +11,8 @@ class Tests {
         val matrix = createMatrix(4, 6, 0.0)
         assertEquals(4, matrix.height)
         assertEquals(6, matrix.width)
+        val matrix1 = createMatrix(1, 1, 1)
+        assertEquals(1, matrix1.get(1, 1))
     }
 
     @Test
