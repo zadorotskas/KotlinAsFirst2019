@@ -43,13 +43,7 @@ interface Matrix<E> {
  */
 fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
     if (width <= 0 || height <= 0) throw IllegalArgumentException()
-    val result = MatrixImpl<E>(height, width)
-    for (i in 1..height) {
-        for (j in 1..width) {
-            result.set(i, j, e)
-        }
-    }
-    return result
+    return MatrixImpl(height, width, e)
 }
 
 /**
@@ -57,8 +51,16 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E>(override val height: Int, override val width: Int) : Matrix<E> {
+class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : Matrix<E> {
     private val map = mutableMapOf<Cell, E>()
+
+    init {
+        for (i in 0 until height) {
+            for (j in 0 until width) {
+                map[Cell(i, j)] = e
+            }
+        }
+    }
 
     override fun get(row: Int, column: Int): E = get(Cell(row, column))
 
@@ -77,19 +79,15 @@ class MatrixImpl<E>(override val height: Int, override val width: Int) : Matrix<
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append("[")
-        for (row in 1..height) {
+        for (row in 0 until height) {
             sb.append("[")
-            for (column in 1..width) {
-                sb.append(map.get(Cell(row, column)))
+            for (column in 0 until width) {
+                sb.append(this[row, column])
                 sb.append(", ")
             }
-            sb.deleteCharAt(sb.length)
-            sb.deleteCharAt(sb.length)
+            sb.delete(sb.length - 2, sb.length)
             sb.append("]")
-            sb.append(", ")
         }
-        sb.deleteCharAt(sb.length)
-        sb.deleteCharAt(sb.length)
         sb.append("]")
         return "$sb" // or, sb.toString()
     }

@@ -11,8 +11,8 @@ class Tests {
         val matrix = createMatrix(4, 6, 0.0)
         assertEquals(4, matrix.height)
         assertEquals(6, matrix.width)
-        val matrix1 = createMatrix(1, 1, 1)
-        assertEquals(1, matrix1.get(1, 1))
+        val matrix1 = createMatrix(1, 1, 0)
+        assertEquals(0, matrix1.get(0, 0))
     }
 
     @Test
