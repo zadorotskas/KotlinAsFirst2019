@@ -44,8 +44,8 @@ interface Matrix<E> {
 fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
     if (width <= 0 || height <= 0) throw IllegalArgumentException()
     val result = MatrixImpl<E>(height, width)
-    for (i in 1 until height) {
-        for (j in 1 until width) {
+    for (i in 1..height) {
+        for (j in 1..width) {
             result.set(i, j, e)
         }
     }
