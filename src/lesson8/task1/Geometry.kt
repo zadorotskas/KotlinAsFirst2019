@@ -88,7 +88,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) <= radius + 1e-6
+    fun contains(p: Point): Boolean = center.distance(p) - radius <= 1e-6
 }
 
 /**
@@ -272,49 +272,19 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 1) return Circle(points[0], 0.0)
     if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
 
-
-    var minY = Double.MAX_VALUE
-    var minX = Double.MAX_VALUE
-    var maxY = Double.MIN_VALUE
-    var maxX = Double.MIN_VALUE
-    for ((x, y) in points) {
-        if (y < minY) {
-            minY = y
-        }
-        if (x < minX) {
-            minX = x
-        }
-        if (y > maxY) {
-            maxY = y
-        }
-        if (x > maxX) {
-            maxX = x
-        }
-    }
-
-
-    val pointsMaxY = points.filter { it.y == maxY }.toSet()
-    val pointsMaxX = points.filter { it.x == maxX }.toSet()
-    val pointsMinY = points.filter { it.y == minY }.toSet()
-    val pointsMinx = points.filter { it.x == minX }.toSet()
-
-    val distantPoints = (pointsMaxY + pointsMaxX + pointsMinY + pointsMinx).toTypedArray()
-
-    var res = circleByDiameter(diameter(*distantPoints))
-
-    if (distantPoints.size == 2) return res
+    var res = circleByDiameter(diameter(*points))
 
     var minRadius = if (points.all { res.contains(it) }) res.radius
     else Double.MAX_VALUE
 
-    for (i in distantPoints.indices) {
-        for (j in i + 1 until distantPoints.size) {
-            for (k in j + 1 until distantPoints.size) {
+    for (i in points.indices) {
+        for (j in i + 1 until points.size) {
+            for (k in j + 1 until points.size) {
                 val currentCircle = try {
                     circleByThreePoints(
-                        distantPoints[i],
-                        distantPoints[j],
-                        distantPoints[k]
+                        points[i],
+                        points[j],
+                        points[k]
                     )
                 } catch (e: IllegalArgumentException) {
                     continue
