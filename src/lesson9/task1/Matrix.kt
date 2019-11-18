@@ -44,8 +44,8 @@ interface Matrix<E> {
 fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
     if (width <= 0 || height <= 0) throw IllegalArgumentException()
     val result = MatrixImpl<E>(height, width)
-    for (i in 0 until height) {
-        for (j in 0 until width) {
+    for (i in 1 until height) {
+        for (j in 1 until width) {
             result.set(i, j, e)
         }
     }
@@ -77,9 +77,9 @@ class MatrixImpl<E>(override val height: Int, override val width: Int) : Matrix<
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append("[")
-        for (row in 0 until height) {
+        for (row in 1..height) {
             sb.append("[")
-            for (column in 0 until width) {
+            for (column in 1..width) {
                 sb.append(this[row, column])
                 sb.append(", ")
             }

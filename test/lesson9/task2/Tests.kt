@@ -47,6 +47,7 @@ class Tests {
     @Test
     @Tag("Hard")
     fun generateSpiral() {
+        assertEquals(createMatrix(2, 1, listOf(listOf(1), listOf(2))), generateSpiral(2, 1))
         assertEquals(createMatrix(1, 2, listOf(listOf(1, 2))), generateSpiral(1, 2))
         assertEquals(createMatrix(1, 1, listOf(listOf(1))), generateSpiral(1, 1))
         assertEquals(
@@ -73,6 +74,17 @@ class Tests {
     @Test
     @Tag("Hard")
     fun generateRectangles() {
+        assertEquals(
+            createMatrix(
+                4, 1,
+                listOf(
+                    listOf(1),
+                    listOf(1),
+                    listOf(1),
+                    listOf(1)
+                )
+            ), generateRectangles(4, 1)
+        )
         assertEquals(
             createMatrix(
                 3, 3,
