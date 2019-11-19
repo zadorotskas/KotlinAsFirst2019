@@ -66,7 +66,8 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
     var currentNumber = 1
     var currentRow = 0
     var currentColumn = 0
-    val numberOfTurns = height + min(height, width) - 1
+    val numberOfTurns = if (height <= width) height * 2 - 1
+    else width * 2
     var x = numberOfTurns
     while (x > 0) {
         val indent = (numberOfTurns - x) / 4
@@ -172,7 +173,7 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
             currentColumn = if (currentRow < width - 1) currentRow + x + 1
             else width - 1
             currentRow = when {
-                currentRow < width -> 0
+                currentRow < width - 1 -> 0
                 else -> currentRow - width + x + 2
             }
         }
