@@ -62,45 +62,45 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  *  9  8  7  6
  */
 fun generateSpiral(height: Int, width: Int): Matrix<Int> {
-    val res = createMatrix(height, width, 1)
+    val res = createMatrix(height, width, 0)
     var currentNumber = 1
-    var currentRow = height - 1
+    var currentRow = 0
     var currentColumn = 0
     val numberOfTurns = height + min(height, width) - 1
     var x = numberOfTurns
     while (x > 0) {
-        val indent = (numberOfTurns - x) / 4 + 1
+        val indent = (numberOfTurns - x) / 4
         when ((numberOfTurns - x) % 4) {
             0 -> {
-                for (i in currentColumn..width - indent) {
+                for (i in currentColumn..width - 1 - indent) {
                     res[currentRow, i] = currentNumber
                     currentNumber++
                 }
-                currentColumn = width - indent
-                currentRow -= 1
+                currentColumn = width - 1 - indent
+                currentRow += 1
             }
             1 -> {
-                for (i in currentRow downTo 1 + indent) {
+                for (i in currentRow..height - 1 - indent) {
                     res[i, currentColumn] = currentNumber
                     currentNumber++
                 }
-                currentRow = 1 + indent
+                currentRow = height - 1 - indent
                 currentColumn -= 1
             }
             2 -> {
-                for (i in currentColumn downTo 1 + indent) {
+                for (i in currentColumn downTo 0 + indent) {
                     res[currentRow, i] = currentNumber
                     currentNumber++
                 }
-                currentColumn = 1 + indent
-                currentRow += 1
+                currentColumn = 0 + indent
+                currentRow -= 1
             }
             else -> {
-                for (i in currentRow..height - indent - 1) {
+                for (i in currentRow downTo 0 + indent + 1) {
                     res[i, currentColumn] = currentNumber
                     currentNumber++
                 }
-                currentRow = height - indent - 1
+                currentRow = 0 + indent + 1
                 currentColumn += 1
             }
         }
@@ -125,7 +125,7 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
  */
 fun generateRectangles(height: Int, width: Int): Matrix<Int> {
     val res = createMatrix(height, width, 0)
-    val radius = min(height, width) / 2 + 1
+    val radius = (min(height, width) + 1) / 2
 
     fun filling(indent: Int, numberToFill: Int) {
         for (i in 0 + indent..height - 1 - indent) {
