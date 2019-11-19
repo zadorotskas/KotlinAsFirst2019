@@ -169,7 +169,7 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
 
         if (currentColumn < 0 || currentRow > height - 1) {
             val x = currentColumn
-            currentColumn = if (currentRow < width - 1) currentRow
+            currentColumn = if (currentRow < width - 1) currentRow + x + 1
             else width - 1
             currentRow = when {
                 currentRow < width -> 0
