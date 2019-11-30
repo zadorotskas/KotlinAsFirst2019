@@ -15,6 +15,13 @@ data class Point(val x: Double, val y: Double) {
      * Рассчитать (по известной формуле) расстояние между двумя точками
      */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
+
+    override fun equals(other: Any?): Boolean = (other is Point && x == other.x && y == other.y)
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        return result
+    }
 }
 
 /**
@@ -77,7 +84,7 @@ data class Circle(val center: Point, val radius: Double) {
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
     fun distance(other: Circle): Double =
-        if (max(radius, other.radius) - min(radius, other.radius) >= center.distance(other.center) ||
+        if (
             center.distance(other.center) <= radius + other.radius
         ) 0.0
         else center.distance(other.center) - radius - other.radius
@@ -158,7 +165,8 @@ class Line private constructor(val b: Double, val angle: Double) {
     fun crossPoint(other: Line): Point {
         val nominator = other.b * cos(angle) - b * cos(other.angle)
         val denominator = sin(angle) * cos(other.angle) - sin(other.angle) * cos(angle)
-        if (denominator == 0.0) throw IllegalArgumentException()
+        if (denominator == 0.0)
+            throw IllegalArgumentException()
 
         val x = nominator / denominator
         val y = if (angle != PI / 2)
@@ -280,15 +288,15 @@ fun minContainingCircle(vararg points: Point): Circle {
     for (i in points.indices) {
         for (j in i + 1 until points.size) {
             for (k in j + 1 until points.size) {
-                val currentCircle = try {
-                    circleByThreePoints(
-                        points[i],
-                        points[j],
-                        points[k]
-                    )
-                } catch (e: IllegalArgumentException) {
-                    continue
-                }
+                if (points[i] == points[j] ||
+                    points[i] == points[k] ||
+                    points[j] == points[k]
+                ) continue
+                val xx = lineByPoints(points[i], points[j])
+                val yy = lineByPoints(points[j], points[k])
+                if (abs(cos(xx.angle) - cos(yy.angle)) <= 1e-6) continue
+                val currentCircle = circleByThreePoints(points[i], points[j], points[k])
+
                 if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
                     res = currentCircle
                     minRadius = currentCircle.radius

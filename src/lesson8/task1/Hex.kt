@@ -62,10 +62,9 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int {
-        return if (center.distance(other.center) <= radius + other.radius) 0
-        else center.distance(other.center) - (radius + other.radius)
-    }
+    fun distance(other: Hexagon): Int = if (center.distance(other.center) <= radius + other.radius) 0
+    else center.distance(other.center) - (radius + other.radius)
+
 
     /**
      * Тривиальная
@@ -122,6 +121,15 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
  * Если отрезок "правильный", то он проходит вдоль одной из трёх осей шестугольника.
  * Если нет, его направление считается INCORRECT
  */
+val directionMap = mapOf(
+    "RIGHT" to HexPoint(1, 0),
+    "UP_RIGHT" to HexPoint(0, 1),
+    "UP_LEFT" to HexPoint(-1, 1),
+    "LEFT" to HexPoint(-1, 0),
+    "DOWN_LEFT" to HexPoint(0, -1),
+    "DOWN_RIGHT" to HexPoint(1, -1)
+)
+
 enum class Direction {
     RIGHT,      // слева направо, например 30 -> 34
     UP_RIGHT,   // вверх-вправо, например 32 -> 62
@@ -131,31 +139,22 @@ enum class Direction {
     DOWN_RIGHT, // вниз-вправо, например 61 -> 25
     INCORRECT;  // отрезок имеет изгиб, например 30 -> 55 (изгиб в точке 35)
 
-    fun coordinates(): HexPoint {
-        return when {
-            this == RIGHT -> HexPoint(1, 0)
-            this == UP_RIGHT -> HexPoint(0, 1)
-            this == UP_LEFT -> HexPoint(-1, 1)
-            this == LEFT -> HexPoint(-1, 0)
-            this == DOWN_LEFT -> HexPoint(0, -1)
-            this == DOWN_RIGHT -> HexPoint(1, -1)
-            else -> throw IllegalArgumentException()
-        }
-    }
-
     /**
      * Простая
      *
      * Вернуть направление, противоположное данному.
      * Для INCORRECT вернуть INCORRECT
      */
-    fun opposite(): Direction {
-        return try {
-            HexSegment(HexPoint(0, 0), HexPoint(-this.coordinates().x, -this.coordinates().y)).direction()
-        } catch (e: IllegalArgumentException) {
+    fun opposite(): Direction =
+        if (directionMap["$this"] != null) {
+            HexSegment(
+                HexPoint(0, 0),
+                HexPoint(-directionMap.getValue("$this").x, -directionMap.getValue("$this").y)
+            ).direction()
+        } else {
             INCORRECT
         }
-    }
+
 
     /**
      * Средняя
@@ -169,9 +168,8 @@ enum class Direction {
      */
     fun next(): Direction {
         if (this == INCORRECT) throw IllegalArgumentException()
-        val y = this.coordinates().y + this.coordinates().x
-        val x = -this.coordinates().y
-        return HexSegment(HexPoint(0, 0), HexPoint(x, y)).direction()
+        val x = values().indexOf(this)
+        return values()[(x + 1) % 6]
     }
 
     /**
@@ -196,8 +194,13 @@ enum class Direction {
  * 35, direction = UP_LEFT, distance = 2 --> 53
  * 45, direction = DOWN_LEFT, distance = 4 --> 05
  */
-fun HexPoint.move(direction: Direction, distance: Int): HexPoint =
-    HexPoint(x + direction.coordinates().x * distance, y + direction.coordinates().y * distance)
+fun HexPoint.move(direction: Direction, distance: Int): HexPoint {
+    if (direction == Direction.INCORRECT) throw  IllegalArgumentException()
+    return HexPoint(
+        x + directionMap.getValue("$direction").x * distance,
+        y + directionMap.getValue("$direction").y * distance
+    )
+}
 
 /**
  * Сложная
