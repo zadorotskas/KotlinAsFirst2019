@@ -16,7 +16,7 @@ data class Point(val x: Double, val y: Double) {
      */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
 
-    override fun equals(other: Any?): Boolean = (other is Point && x == other.x && y == other.y)
+    override fun equals(other: Any?): Boolean = (other is Point && abs(x - other.x) <= 1e-6 && abs(y - other.y) <= 1e-6)
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()
@@ -294,7 +294,10 @@ fun minContainingCircle(vararg points: Point): Circle {
                 ) continue
                 val xx = lineByPoints(points[i], points[j])
                 val yy = lineByPoints(points[j], points[k])
-                if (abs(cos(xx.angle) - cos(yy.angle)) <= 1e-6) continue
+                val cos1 = cos(xx.angle)
+                val cos2 = cos(yy.angle)
+                if (cos1 == 1.0 && cos2 == -1.0 || cos2 == 1.0 && cos1 == -1.0) continue
+                if (abs(cos1 - cos2) <= 1e-6) continue
                 val currentCircle = circleByThreePoints(points[i], points[j], points[k])
 
                 if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
