@@ -3,7 +3,7 @@
 package lesson8.task1
 
 import kotlin.math.abs
-import kotlin.math.roundToInt
+import kotlin.math.sign
 
 /**
  * Точка (гекс) на шестиугольной сетке.
@@ -122,12 +122,12 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
  * Если нет, его направление считается INCORRECT
  */
 val directionMap = mapOf(
-    "RIGHT" to HexPoint(1, 0),
-    "UP_RIGHT" to HexPoint(0, 1),
-    "UP_LEFT" to HexPoint(-1, 1),
-    "LEFT" to HexPoint(-1, 0),
-    "DOWN_LEFT" to HexPoint(0, -1),
-    "DOWN_RIGHT" to HexPoint(1, -1)
+    Direction.RIGHT to HexPoint(1, 0),
+    Direction.UP_RIGHT to HexPoint(0, 1),
+    Direction.UP_LEFT to HexPoint(-1, 1),
+    Direction.LEFT to HexPoint(-1, 0),
+    Direction.DOWN_LEFT to HexPoint(0, -1),
+    Direction.DOWN_RIGHT to HexPoint(1, -1)
 )
 
 enum class Direction {
@@ -146,10 +146,10 @@ enum class Direction {
      * Для INCORRECT вернуть INCORRECT
      */
     fun opposite(): Direction =
-        if (directionMap["$this"] != null) {
+        if (directionMap[this] != null) {
             HexSegment(
                 HexPoint(0, 0),
-                HexPoint(-directionMap.getValue("$this").x, -directionMap.getValue("$this").y)
+                HexPoint(-directionMap.getValue(this).x, -directionMap.getValue(this).y)
             ).direction()
         } else {
             INCORRECT
@@ -197,8 +197,8 @@ enum class Direction {
 fun HexPoint.move(direction: Direction, distance: Int): HexPoint {
     if (direction == Direction.INCORRECT) throw  IllegalArgumentException()
     return HexPoint(
-        x + directionMap.getValue("$direction").x * distance,
-        y + directionMap.getValue("$direction").y * distance
+        x + directionMap.getValue(direction).x * distance,
+        y + directionMap.getValue(direction).y * distance
     )
 }
 
@@ -221,15 +221,27 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint {
  *     )
  */
 fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
-    val n = from.distance(to)
-    val res = mutableListOf<HexPoint>()
-    if (n == 0) return listOf(from)
-    for (i in 0..n) {
-        var y = from.y + (to.y - from.y) * 1.0 / n * i
-        var x = from.x + (to.x - from.x) * 1.0 / n * i
-        if (x % 1 == 0.5) x -= 0.5
-        else if (y % 1 == 0.5) y -= 0.5
-        res.add(HexPoint(x.roundToInt(), y.roundToInt()))
+    val res = mutableListOf(from)
+    if (from.distance(to) == 0) return res
+    var currentHex = from
+    fun pathBetweenParallelHexes(from: HexPoint, to: HexPoint) {
+        val direction = HexSegment(from, to).direction()
+        val n = from.distance(to)
+        for (i in 1..n) {
+            currentHex = currentHex.move(direction, 1)
+            res.add(currentHex)
+        }
+    }
+    if (HexSegment(from, to).direction() != Direction.INCORRECT) {
+        pathBetweenParallelHexes(from, to)
+    } else {
+        val turningHex = if ((from.y - to.y).sign != (from.x - to.x).sign) {
+            HexPoint(abs(from.x + from.y - to.x - to.y), to.y)
+        } else {
+            HexPoint(from.x, to.y)
+        }
+        pathBetweenParallelHexes(from, turningHex)
+        pathBetweenParallelHexes(turningHex, to)
     }
     return res
 }

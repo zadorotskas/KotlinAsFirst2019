@@ -16,7 +16,7 @@ data class Point(val x: Double, val y: Double) {
      */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
 
-    override fun equals(other: Any?): Boolean = (other is Point && abs(x - other.x) <= 1e-6 && abs(y - other.y) <= 1e-6)
+    override fun equals(other: Any?): Boolean = other is Point && x == other.x && y == other.y
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()
@@ -95,7 +95,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) - radius <= 1e-6
+    fun contains(p: Point): Boolean = center.distance(p) <= radius
 }
 
 /**
@@ -261,7 +261,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
     val line2 = bisectorByPoints(b, c)
     val center = line1.crossPoint(line2)
     val radius = center.distance(a)
-    return Circle(center, radius)
+    return Circle(center, radius + 1e-6)
 }
 
 /**
@@ -281,8 +281,8 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
 
     var res = circleByDiameter(diameter(*points))
-
-    var minRadius = if (points.all { res.contains(it) }) res.radius
+    val x = res.radius
+    var minRadius = if (points.all { res.contains(it) }) x
     else Double.MAX_VALUE
 
     for (i in points.indices) {
@@ -296,10 +296,8 @@ fun minContainingCircle(vararg points: Point): Circle {
                 val yy = lineByPoints(points[j], points[k])
                 val cos1 = cos(xx.angle)
                 val cos2 = cos(yy.angle)
-                if (cos1 == 1.0 && cos2 == -1.0 || cos2 == 1.0 && cos1 == -1.0) continue
-                if (abs(cos1 - cos2) <= 1e-6) continue
+                if (abs(cos1) == abs(cos2)) continue
                 val currentCircle = circleByThreePoints(points[i], points[j], points[k])
-
                 if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
                     res = currentCircle
                     minRadius = currentCircle.radius
