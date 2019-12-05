@@ -296,6 +296,7 @@ fun minContainingCircle(vararg points: Point): Circle {
                 val yy = lineByPoints(points[j], points[k])
                 val cos1 = cos(xx.angle)
                 val cos2 = cos(yy.angle)
+                if (abs(cos1 - cos2) <= 1e-6) continue
                 if (abs(cos1) == abs(cos2)) continue
                 val currentCircle = circleByThreePoints(points[i], points[j], points[k])
                 if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
