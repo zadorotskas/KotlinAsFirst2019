@@ -236,7 +236,13 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
         pathBetweenParallelHexes(from, to)
     } else {
         val turningHex = if ((from.y - to.y).sign != (from.x - to.x).sign) {
-            HexPoint((from.x + from.y - to.y), to.y)
+            if (from.y - to.y > 0) {
+                if (from.y + from.x > to.y + to.x) HexPoint(to.x, (from.x + from.y - to.x))
+                else HexPoint((from.x + from.y - to.y), to.y)
+            } else {
+                if (from.y + from.x > to.y + to.x) HexPoint((from.x + from.y - to.y), to.y)
+                else HexPoint(to.x, (from.x + from.y - to.x))
+            }
         } else {
             HexPoint(from.x, to.y)
         }
