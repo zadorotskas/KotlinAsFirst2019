@@ -95,7 +95,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) <= radius
+    fun contains(p: Point): Boolean = center.distance(p) <= radius + 1e-6
 }
 
 /**
@@ -260,10 +260,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
     val line1 = bisectorByPoints(a, b)
     val line2 = bisectorByPoints(b, c)
     val center = line1.crossPoint(line2)
-    val radius1 = center.distance(a)
-    val radius2 = center.distance(b)
-    val radius3 = center.distance(c)
-    val radius = maxOf(radius1, radius2, radius3)
+    val radius = center.distance(a)
     return Circle(center, radius)
 }
 
@@ -285,7 +282,7 @@ fun minContainingCircle(vararg points: Point): Circle {
 
     var res = circleByDiameter(diameter(*points))
     val x = res.radius
-    var minRadius = if (points.all { res.contains(it) }) x
+    var minRadius = if (points.all { res.center.distance(it) - res.radius <= 1e-6 }) x
     else Double.MAX_VALUE
 
     for (i in points.indices) {
@@ -300,12 +297,12 @@ fun minContainingCircle(vararg points: Point): Circle {
                 val cos1 = cos(xx.angle)
                 val cos2 = cos(yy.angle)
                 if (abs(cos1 - cos2) <= 1e-6) continue
-                if (abs(cos1) == abs(cos2)) continue
+                if ((cos1 == -1.0 && cos2 == 1.0) || (cos2 == -1.0 && cos1 == 1.0)) continue
                 val currentCircle = circleByThreePoints(points[i], points[j], points[k])
-                if (points.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
+                if (points.all { currentCircle.center.distance(it) - currentCircle.radius <= 1e-6 } && currentCircle.radius < minRadius) {
                     res = currentCircle
                     minRadius = currentCircle.radius
-                }
+                }//.contains(it) currentCircle.center.distance(it) - currentCircle.radius <= 1e-6
             }
         }
     }
