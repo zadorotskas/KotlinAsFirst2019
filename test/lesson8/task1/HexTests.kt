@@ -125,6 +125,19 @@ class HexTests {
                 HexPoint(y = 5, x = 0)
             ), pathBetweenHexes(HexPoint(y = 0, x = 8), HexPoint(y = 5, x = 0))
         )
+        assertEquals(
+            listOf(
+                HexPoint(y = 5, x = 0),
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 3, x = 2),
+                HexPoint(y = 2, x = 3),
+                HexPoint(y = 1, x = 4),
+                HexPoint(y = 0, x = 5),
+                HexPoint(y = 0, x = 6),
+                HexPoint(y = 0, x = 7),
+                HexPoint(y = 0, x = 8)
+            ), pathBetweenHexes(HexPoint(y = 5, x = 0), HexPoint(y = 0, x = 8))
+        )
     }
 
     @Test
