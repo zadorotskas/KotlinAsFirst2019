@@ -259,6 +259,7 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
     val line1 = bisectorByPoints(a, b)
     val line2 = bisectorByPoints(b, c)
+    if (line1.angle == line2.angle) return Circle(Point(0.0, 0.0), Double.MAX_VALUE)
     val center = line1.crossPoint(line2)
     val radius = center.distance(a)
     return Circle(center, radius)
@@ -294,12 +295,6 @@ fun minContainingCircle(vararg points: Point): Circle {
                     points[i] == points[k] ||
                     points[j] == points[k]
                 ) continue
-                val xx = lineByPoints(points[i], points[j])
-                val yy = lineByPoints(points[j], points[k])
-                val cos1 = cos(xx.angle)
-                val cos2 = cos(yy.angle)
-                if (abs(cos2 - cos1) <= 1e-6) continue
-                if ((cos1 == -1.0 && cos2 == 1.0) || (cos2 == -1.0 && cos1 == 1.0)) continue
                 val currentCircle = circleByThreePoints(points[i], points[j], points[k])
                 val pointsWithoutFarthest = points.toSet() - points[i] - points[j] - points[k]
                 if (pointsWithoutFarthest.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
