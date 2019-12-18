@@ -280,9 +280,11 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 1) return Circle(points[0], 0.0)
     if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
 
-    var res = circleByDiameter(diameter(*points))
+    val farthestPoints = diameter(*points)
+    var res = circleByDiameter(farthestPoints)
     val x = res.radius
-    var minRadius = if (points.all { res.center.distance(it) - res.radius <= 1e-6 }) x
+    val pointsWithoutTwoFarthest = points.toSet() - farthestPoints.begin - farthestPoints.end
+    var minRadius = if (pointsWithoutTwoFarthest.all { res.contains(it) }) x
     else Double.MAX_VALUE
 
     for (i in points.indices) {
@@ -299,7 +301,8 @@ fun minContainingCircle(vararg points: Point): Circle {
                 if (abs(cos2 - cos1) <= 1e-6) continue
                 if ((cos1 == -1.0 && cos2 == 1.0) || (cos2 == -1.0 && cos1 == 1.0)) continue
                 val currentCircle = circleByThreePoints(points[i], points[j], points[k])
-                if (points.all { currentCircle.center.distance(it) - currentCircle.radius <= 1e-6 } && currentCircle.radius < minRadius) {
+                val pointsWithoutFarthest = points.toSet() - points[i] - points[j] - points[k]
+                if (pointsWithoutFarthest.all { currentCircle.contains(it) } && currentCircle.radius < minRadius) {
                     res = currentCircle
                     minRadius = currentCircle.radius
                 }
